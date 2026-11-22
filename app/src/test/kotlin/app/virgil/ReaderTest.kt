@@ -31,6 +31,14 @@ import app.virgil.engine.books.importer.BookImporter
 import app.virgil.engine.books.importer.ImportOutcome
 import app.virgil.engine.books.importer.StagedFile
 import app.virgil.feature.reader.ReaderRoute
+import app.virgil.core.model.Language
+import app.virgil.engine.translation.EngineStatus
+import app.virgil.engine.translation.ModelCatalog
+import app.virgil.engine.translation.TranslationEvent
+import app.virgil.engine.translation.TranslationRequest
+import app.virgil.engine.translation.Translator
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first
@@ -86,7 +94,9 @@ class ReaderTest {
         bookId = (r as ImportOutcome.Imported).bookId
     }
 
-    @After fun tearDown() = db.close()
+    // O banco em memória não é fechado aqui: a regra do Compose destrói a Activity depois do @After,
+    // e o leitor ainda grava a posição ao parar (comportamento desejado no app).
+    @After fun tearDown() = Unit
 
     @Test fun leitorAbreTocaPalavraESalva() {
         val vocab = VocabularyRepository(db)
@@ -97,6 +107,7 @@ class ReaderTest {
                     ReaderRoute(
                         bookId = bookId, store = BookStore(db, files), vocabulary = vocab,
                         preferences = PreferencesRepository(PreferencesStore(ApplicationProvider.getApplicationContext())),
+                        translator = null,
                         imageRoot = { File(files.root, it).absolutePath }, onBack = {}, onOpenTranslationSettings = {},
                     )
                 }
@@ -129,6 +140,47 @@ class ReaderTest {
         compose.onNodeWithText("Frase").performTouchInput { click() }
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("build/outputs/roborazzi/leitor-frase.png")
+    }
+
+    /** Tradutor determinístico: verifica o fluxo da interface sem depender do modelo. */
+    private class FakeTranslator : Translator {
+        override val status = MutableStateFlow<EngineStatus>(EngineStatus.Ready(ModelCatalog.TranslateGemma4B))
+        val requests = mutableListOf<TranslationRequest>()
+        override fun translate(request: TranslationRequest) = flow {
+            requests += request
+            emit(TranslationEvent.Started)
+            val text = mapOf("replied" to "respondeu").getOrElse(request.text) { "O Sr. Bennet respondeu que não." }
+            emit(TranslationEvent.Done(text, fromCache = false, millis = 850))
+        }
+        override fun release() {}
+    }
+
+    @Test fun traducaoApareceNoCartaoESalvaAutomaticamente() {
+        val fake = FakeTranslator()
+        compose.setContent {
+            VirgilTheme(ThemeMode.Light) {
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+                    ReaderRoute(
+                        bookId = bookId, store = BookStore(db, files), vocabulary = VocabularyRepository(db),
+                        preferences = PreferencesRepository(PreferencesStore(ApplicationProvider.getApplicationContext())),
+                        translator = fake, imageRoot = { File(files.root, it).absolutePath }, onBack = {}, onOpenTranslationSettings = {},
+                    )
+                }
+            }
+        }
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Mr. Bennet replied that he had not.").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Mr. Bennet replied that he had not.").performTouchInput {
+            click(androidx.compose.ui.geometry.Offset(width * 0.42f, height / 2f))
+        }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("respondeu").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("No vocabulário").fetchSemanticsNodes().isNotEmpty() }
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/leitor-traducao.png")
+        val req = fake.requests.single()
+        assertThat(req.text).isEqualTo("replied")
+        assertThat(req.context).isEqualTo("Mr. Bennet replied that he had not.")
+        assertThat(req.language).isEqualTo(Language.EN_GB)
+        val saved = runBlocking { db.vocabulary().observe(null, null, null, null, null).first() }
+        assertThat(saved.single().translation).isEqualTo("respondeu")
     }
 
     private fun writeEpub(file: File) {

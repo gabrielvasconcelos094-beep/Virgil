@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
 
 @Composable
-fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileRepository, onBack: () -> Unit, onOpenLicenses: () -> Unit) {
+fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileRepository, onBack: () -> Unit, onOpenLicenses: () -> Unit, onOpenTranslation: () -> Unit = {}, translationSummary: String? = null) {
     val prefs by prefsRepo.preferences.collectAsStateWithLifecycle(initialValue = null)
     val profiles by remember(profileRepo) { profileRepo.profiles() }.collectAsStateWithLifecycle(initialValue = emptyList())
     val scope = rememberCoroutineScope()
@@ -79,6 +79,8 @@ fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileReposito
         onAutoSave = { scope.launch { prefsRepo.update { setAutoSave(it) } } },
         onLevel = { l, c -> scope.launch { profileRepo.setLevel(l, c) } },
         onOpenLicenses = onOpenLicenses,
+        onOpenTranslation = onOpenTranslation,
+        translationSummary = translationSummary,
     )
 }
 
@@ -92,6 +94,8 @@ fun SettingsScreen(
     onAutoSave: (Boolean) -> Unit,
     onLevel: (Language, CefrLevel?) -> Unit,
     onOpenLicenses: () -> Unit,
+    onOpenTranslation: () -> Unit = {},
+    translationSummary: String? = null,
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = Spacing.xxl)) {
         Row(Modifier.padding(start = Spacing.xs, top = Spacing.md), verticalAlignment = Alignment.CenterVertically) {
@@ -135,11 +139,13 @@ fun SettingsScreen(
 
         Divider()
         SectionLabel("Tradução")
-        Text(
-            "Nenhum modelo de tradução instalado. O Virgil traduz inteiramente no aparelho: o modelo é baixado uma única vez e depois funciona sem internet.",
-            style = MaterialTheme.typography.bodyMedium, color = Virgil.colors.textSecondary,
-            modifier = Modifier.padding(horizontal = Spacing.screen),
-        )
+        Column(Modifier.fillMaxWidth().clickable(onClick = onOpenTranslation).padding(horizontal = Spacing.screen, vertical = Spacing.sm)) {
+            Text("Modelo de tradução", style = MaterialTheme.typography.bodyLarge, color = Virgil.colors.textPrimary)
+            Text(
+                translationSummary ?: "Nenhum modelo instalado. A tradução acontece inteiramente no aparelho; o modelo é baixado uma única vez.",
+                style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary,
+            )
+        }
 
         Divider()
         SectionLabel("Sobre")

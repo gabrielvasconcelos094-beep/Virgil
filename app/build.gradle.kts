@@ -28,6 +28,9 @@ android {
 
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        // As variantes de CPU do ggml são carregadas por caminho (dlopen em nativeLibraryDir),
+        // então as bibliotecas nativas precisam ser extraídas na instalação.
+        jniLibs.useLegacyPackaging = true
     }
 }
 
@@ -38,6 +41,7 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:data"))
     implementation(project(":engine:books"))
+    implementation(project(":engine:translation"))
     implementation(project(":feature:library"))
     implementation(project(":feature:reader"))
     implementation(project(":feature:vocabulary"))
@@ -57,6 +61,8 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.truth)
+    testImplementation(libs.androidx.work.testing)
+    testImplementation(libs.androidx.work.runtime)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi)

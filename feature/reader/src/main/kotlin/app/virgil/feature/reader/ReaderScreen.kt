@@ -88,6 +88,7 @@ import app.virgil.core.designsystem.theme.Virgil
 import app.virgil.core.designsystem.theme.VirgilFonts
 import app.virgil.core.model.ReadingPreferences
 import app.virgil.engine.books.BookStore
+import app.virgil.engine.translation.Translator
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -97,11 +98,12 @@ fun ReaderRoute(
     store: BookStore,
     vocabulary: VocabularyRepository,
     preferences: PreferencesRepository,
+    translator: Translator?,
     imageRoot: (String) -> String,
     onBack: () -> Unit,
     onOpenTranslationSettings: () -> Unit,
 ) {
-    val vm: ReaderViewModel = viewModel(key = "reader-$bookId", factory = viewModelFactory { initializer { ReaderViewModel(bookId, store, vocabulary, preferences) } })
+    val vm: ReaderViewModel = viewModel(key = "reader-$bookId", factory = viewModelFactory { initializer { ReaderViewModel(bookId, store, vocabulary, preferences, translator) } })
     val state by vm.state.collectAsStateWithLifecycle()
     val prefs by vm.prefs.collectAsStateWithLifecycle()
     val bookmarks by vm.bookmarks.collectAsStateWithLifecycle()

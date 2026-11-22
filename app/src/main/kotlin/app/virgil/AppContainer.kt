@@ -12,6 +12,8 @@ import app.virgil.core.datastore.PreferencesStore
 import app.virgil.engine.books.BookFiles
 import app.virgil.engine.books.BookStore
 import app.virgil.engine.books.importer.ImportController
+import app.virgil.engine.translation.LocalTranslationEngine
+import app.virgil.engine.translation.ModelStore
 
 /**
  * Grafo de dependências do app (injeção manual — ADR-0006).
@@ -33,4 +35,9 @@ class AppContainer(context: Context) {
     val bookFiles by lazy { BookFiles(booksRoot) }
     val bookStore by lazy { BookStore(database, bookFiles) }
     val imports by lazy { ImportController(appContext) }
+    val models by lazy { ModelStore(appContext, database) }
+    private val translatorLazy = lazy { LocalTranslationEngine(database, models, appContext.applicationInfo.nativeLibraryDir) }
+    val translator by translatorLazy
+    /** Evita criar o motor só para responder a onTrimMemory. */
+    val translatorIfCreated: LocalTranslationEngine? get() = if (translatorLazy.isInitialized()) translator else null
 }

@@ -20,6 +20,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -41,6 +42,7 @@ import app.virgil.feature.progress.ProgressRoute
 import app.virgil.feature.review.ReviewRoute
 import app.virgil.feature.settings.LicensesScreen
 import app.virgil.feature.settings.SettingsRoute
+import app.virgil.feature.settings.TranslationModelRoute
 import app.virgil.feature.vocabulary.VocabularyRoute
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -51,6 +53,7 @@ import kotlin.reflect.KClass
 @Serializable object ProgressDest
 @Serializable object SettingsDest
 @Serializable object LicensesDest
+@Serializable object TranslationDest
 @Serializable data class ReaderDest(val bookId: Long)
 
 private data class TopLevel(val route: Any, val routeClass: KClass<*>, val label: String, val icon: ImageVector)
@@ -135,6 +138,8 @@ fun VirgilApp(container: AppContainer) {
                         profileRepo = container.profiles,
                         onBack = { nav.popBackStack() },
                         onOpenLicenses = { nav.navigate(LicensesDest) },
+                        onOpenTranslation = { nav.navigate(TranslationDest) },
+                        translationSummary = translationSummary(container),
                     )
                 }
             }
@@ -145,13 +150,23 @@ fun VirgilApp(container: AppContainer) {
                     store = container.bookStore,
                     vocabulary = container.vocabulary,
                     preferences = container.preferences,
+                    translator = container.translator,
                     imageRoot = { rel -> java.io.File(container.booksRoot, rel).absolutePath },
                     onBack = { nav.popBackStack() },
-                    onOpenTranslationSettings = { nav.navigate(SettingsDest) },
+                    onOpenTranslationSettings = { nav.navigate(TranslationDest) },
                 )
+            }
+            composable<TranslationDest> {
+                SafeArea(includeBottom = true) { TranslationModelRoute(container.models, container.translator, onBack = { nav.popBackStack() }) }
             }
             composable<LicensesDest> { SafeArea(includeBottom = true) { LicensesScreen(onBack = { nav.popBackStack() }) } }
         }
     }
 }
 
+
+@Composable
+private fun translationSummary(container: AppContainer): String? {
+    val installed by container.models.installed.collectAsState()
+    return installed?.let { "${it.displayName} instalado · funciona sem internet" }
+}

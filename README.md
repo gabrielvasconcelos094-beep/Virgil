@@ -17,8 +17,8 @@ Livros em português também podem ser lidos.
 | 0 | Diagnóstico, benchmark de modelos de tradução, decisões de arquitetura | ✅ |
 | 1 | Projeto multi-módulo, identidade visual, tema claro/escuro, tipografia, navegação, Room, DataStore | ✅ |
 | 2 | Importação EPUB/TXT, biblioteca, leitor, seleção de palavras | ✅ |
-| 3 | Motor de tradução local (llama.cpp + modelo único) | próxima |
-| 4 | Análise de dificuldade CEFR | — |
+| 3 | Motor de tradução local (llama.cpp + modelo único) | ✅ (falta medir no aparelho) |
+| 4 | Análise de dificuldade CEFR | próxima |
 | 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | — |
 | 6 | Polimento, desempenho, testes de ponta a ponta | — |
 
@@ -35,8 +35,11 @@ O que já funciona de verdade nesta versão:
   frase original, o livro e o capítulo.
 - **Vocabulário, níveis, preferências e estatísticas de tempo de leitura** persistidos localmente.
 
-Ainda **não** há tradução: o cartão de consulta diz que nenhum modelo está instalado, em vez de
-simular um resultado. O motor local é a Fase 3.
+- **Tradução local:** um único modelo (TranslateGemma 4B, ou Hy-MT2 1.8B em aparelhos com 4 GB),
+  baixado uma vez em segundo plano (retomável, só em Wi-Fi por padrão, SHA-256 verificado) ou
+  instalado a partir de um arquivo; executado com llama.cpp no próprio aparelho. Palavra e expressão
+  em contexto, frase e parágrafo com texto aparecendo aos poucos; cache local; a última consulta
+  cancela a anterior; o modelo é descarregado após inatividade ou sob pressão de memória.
 
 ## Documentação
 
@@ -54,6 +57,7 @@ Requisitos: JDK 21, Android SDK com `platforms;android-37.2` e `build-tools;36.0
 (a partir da Fase 3 também `ndk;28.2.13676358` e `cmake;3.31.6`).
 
 ```bash
+git submodule update --init --depth 1      # llama.cpp (third_party/llama.cpp)
 echo "sdk.dir=/caminho/para/android-sdk" > local.properties
 ./gradlew assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
 ./gradlew assembleRelease        # APK minificado (assinado com a chave de debug até haver keystore própria)
@@ -61,6 +65,15 @@ echo "sdk.dir=/caminho/para/android-sdk" > local.properties
 ```
 
 Capturas de tela geradas pelos testes ficam em `app/build/outputs/roborazzi/`.
+
+Testes com o modelo real (opcionais, rodam na JVM do computador):
+
+```bash
+cmake -S engine/llama/src/main/cpp -B build-host -DCMAKE_BUILD_TYPE=Release && cmake --build build-host -j
+VIRGIL_LLAMA_HOST_LIB=$PWD/build-host/libvirgil_llama.so \
+VIRGIL_TEST_MODEL=/caminho/translategemma-4b-it-Q4_K_M.gguf \
+./gradlew :engine:llama:testDebugUnitTest :engine:translation:testDebugUnitTest
+```
 
 ## Estrutura
 

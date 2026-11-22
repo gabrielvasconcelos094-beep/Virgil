@@ -1,0 +1,229 @@
+[
+ {
+  "lang": "en",
+  "sentence": "She is a bright student.",
+  "word": "bright",
+  "expected": [
+   "inteligente",
+   "brilhante"
+  ],
+  "out": "brilhante"
+ },
+ {
+  "lang": "en",
+  "sentence": "His future looks bright.",
+  "word": "bright",
+  "expected": [
+   "promissor",
+   "brilhante",
+   "radiante"
+  ],
+  "out": "promissor"
+ },
+ {
+  "lang": "en",
+  "sentence": "She could scarcely believe what she had witnessed.",
+  "word": "scarcely",
+  "expected": [
+   "mal",
+   "quase não",
+   "dificilmente"
+  ],
+  "out": "mal"
+ },
+ {
+  "lang": "en",
+  "sentence": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+  "word": "want",
+  "expected": [
+   "procura",
+   "necessidade",
+   "falta"
+  ],
+  "out": "necessidade"
+ },
+ {
+  "lang": "en",
+  "sentence": "He put the kettle on and waited for the post.",
+  "word": "post",
+  "expected": [
+   "correio",
+   "correspondência",
+   "carteiro"
+  ],
+  "out": "correio"
+ },
+ {
+  "lang": "en",
+  "sentence": "He gave up the struggle at last.",
+  "word": "gave up",
+  "expected": [
+   "desistiu",
+   "abandonou",
+   "renunciou"
+  ],
+  "out": "desistiu"
+ },
+ {
+  "lang": "fr",
+  "sentence": "Il a passé l'examen hier, mais il ne connaît pas encore le résultat.",
+  "word": "passé",
+  "expected": [
+   "fez",
+   "prestou"
+  ],
+  "out": "realizado"
+ },
+ {
+  "lang": "fr",
+  "sentence": "Longtemps, je me suis couché de bonne heure.",
+  "word": "de bonne heure",
+  "expected": [
+   "cedo"
+  ],
+  "out": "cedo da manhã"
+ },
+ {
+  "lang": "fr",
+  "sentence": "Pendant plusieurs jours de suite des lambeaux d'armée en déroute avaient traversé la ville.",
+  "word": "lambeaux",
+  "expected": [
+   "restos",
+   "farrapos",
+   "fragmentos",
+   "frangalhos"
+  ],
+  "out": "Restos"
+ },
+ {
+  "lang": "fr",
+  "sentence": "Nous étions à l'Étude, quand le Proviseur entra, suivi d'un nouveau habillé en bourgeois.",
+  "word": "nouveau",
+  "expected": [
+   "novato",
+   "aluno novo",
+   "recém-chegado"
+  ],
+  "out": "novo"
+ },
+ {
+  "lang": "de",
+  "sentence": "Sie schlug das Buch auf und fing an zu lesen.",
+  "word": "schlug",
+  "expected": [
+   "abriu"
+  ],
+  "out": "abriu"
+ },
+ {
+  "lang": "de",
+  "sentence": "Die Bank am Fluss war leer, nur ein Hund lag darunter.",
+  "word": "Bank",
+  "expected": [
+   "banco"
+  ],
+  "out": "Banco"
+ },
+ {
+  "lang": "de",
+  "sentence": "Jemand mußte Josef K. verleumdet haben, denn ohne daß er etwas Böses getan hätte, wurde er eines Morgens verhaftet.",
+  "word": "verleumdet",
+  "expected": [
+   "caluniado",
+   "difamado"
+  ],
+  "out": "denunciado"
+ },
+ {
+  "lang": "de",
+  "sentence": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
+  "word": "Ungeziefer",
+  "expected": [
+   "inseto",
+   "verme",
+   "bicho",
+   "praga"
+  ],
+  "out": "Inseto"
+ },
+ {
+  "lang": "it",
+  "sentence": "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti.",
+  "word": "mezzogiorno",
+  "expected": [
+   "sul"
+  ],
+  "out": "Meio-dia"
+ },
+ {
+  "lang": "it",
+  "sentence": "Ho preso un granchio: il treno partiva alle sette, non alle otto.",
+  "word": "preso un granchio",
+  "expected": [
+   "cometi um engano",
+   "me enganei",
+   "errei"
+  ],
+  "out": "peguei um caranguejo"
+ },
+ {
+  "lang": "it",
+  "sentence": "Verso sera smise di piovere e uscimmo nel giardino.",
+  "word": "smise",
+  "expected": [
+   "parou"
+  ],
+  "out": "Deu-se"
+ },
+ {
+  "lang": "it",
+  "sentence": "Un tempo i Malavoglia erano stati numerosi come i sassi della strada vecchia di Trezza.",
+  "word": "sassi",
+  "expected": [
+   "pedras",
+   "seixos"
+  ],
+  "out": "Pedras"
+ },
+ {
+  "lang": "es",
+  "sentence": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo.",
+  "word": "lugar",
+  "expected": [
+   "povoado",
+   "aldeia",
+   "lugarejo",
+   "lugar"
+  ],
+  "out": "lugar"
+ },
+ {
+  "lang": "es",
+  "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+  "word": "exquisita",
+  "expected": [
+   "deliciosa",
+   "requintada",
+   "excelente"
+  ],
+  "out": "delicioso"
+ },
+ {
+  "lang": "es",
+  "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+  "word": "piso",
+  "expected": [
+   "apartamento"
+  ],
+  "out": "apartamento"
+ },
+ {
+  "lang": "es",
+  "sentence": "Mi hermana está embarazada de su segundo hijo.",
+  "word": "embarazada",
+  "expected": [
+   "grávida"
+  ],
+  "out": "grávida"
+ }
+]

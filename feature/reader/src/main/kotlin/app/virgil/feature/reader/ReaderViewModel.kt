@@ -15,6 +15,10 @@ import app.virgil.engine.books.BookStore
 import app.virgil.engine.books.OpenedBook
 import app.virgil.engine.books.model.BlockType
 import app.virgil.engine.books.model.ChapterDoc
+import app.virgil.engine.translation.EngineStatus
+import app.virgil.engine.translation.TranslationEvent
+import app.virgil.engine.translation.TranslationRequest
+import app.virgil.engine.translation.Translator
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -38,6 +42,7 @@ data class TextSelection(val blockIndex: Int, val start: Int, val end: Int, val 
 sealed interface TranslationUi {
     data object NoModel : TranslationUi
     data object Working : TranslationUi
+    data class Streaming(val text: String) : TranslationUi
     data class Ready(val text: String, val fromCache: Boolean) : TranslationUi
     data class Failed(val message: String) : TranslationUi
 }
@@ -80,8 +85,10 @@ class ReaderViewModel(
     private val store: BookStore,
     private val vocabulary: VocabularyRepository,
     private val prefsRepo: PreferencesRepository,
+    private val translator: Translator? = null,
     private val clock: () -> Long = System::currentTimeMillis,
 ) : ViewModel() {
+    private var translateJob: Job? = null
     private val _state = MutableStateFlow(ReaderUiState())
     val state: StateFlow<ReaderUiState> = _state.asStateFlow()
 
@@ -270,12 +277,41 @@ class ReaderViewModel(
         val context = if (sel.kind == SelectionKind.Word || sel.kind == SelectionKind.Expression) {
             segmenter.sentenceAround(block.text, sel.start, sel.end).let { block.text.substring(it.first, it.last + 1) }
         } else null
-        // Sem motor de tradução nesta fase: o cartão informa isso, sem inventar resultado.
-        _state.update { it.copy(lookup = LookupUi(sel, text, context, TranslationUi.NoModel, saved = false), controlsVisible = false) }
-        if (translate) sessionLookups++
+        translateJob?.cancel()
+        val available = translator?.status?.value.let { it != null && it !is EngineStatus.NoModel && it !is EngineStatus.Unsupported }
+        val initial = when {
+            !translate -> TranslationUi.Working
+            available -> TranslationUi.Working
+            translator?.status?.value is EngineStatus.Unsupported -> TranslationUi.Failed((translator.status.value as EngineStatus.Unsupported).reason)
+            else -> TranslationUi.NoModel
+        }
+        _state.update { it.copy(lookup = LookupUi(sel, text, context, initial, saved = false), controlsVisible = false) }
+        if (!translate || !available || translator == null) return
+        sessionLookups++
+        val book = opened
+        val request = TranslationRequest(
+            kind = sel.kind, language = book?.language ?: Language.EN_GB, text = text, context = context,
+            bookId = book?.book?.id, chapterIndex = _state.value.chapterIndex,
+        )
+        translateJob = viewModelScope.launch {
+            translator.translate(request).collect { ev ->
+                val ui = when (ev) {
+                    TranslationEvent.Started -> TranslationUi.Working
+                    is TranslationEvent.Partial -> TranslationUi.Streaming(ev.text)
+                    is TranslationEvent.Done -> TranslationUi.Ready(ev.text, ev.fromCache)
+                    is TranslationEvent.Failed -> TranslationUi.Failed(ev.message)
+                }
+                _state.update { s -> s.copy(lookup = s.lookup?.takeIf { it.selection == sel }?.copy(translation = ui) ?: s.lookup) }
+                // Salvamento automático no vocabulário (desativável nas Configurações).
+                if (ev is TranslationEvent.Done && (sel.kind == SelectionKind.Word || sel.kind == SelectionKind.Expression) && prefs.value?.autoSaveLookups == true) {
+                    saveSelection()
+                }
+            }
+        }
     }
 
     fun clearSelection() {
+        translateJob?.cancel()
         lastWordSelection = null
         dragAnchor = null
         _state.update { it.copy(lookup = null) }
@@ -348,6 +384,10 @@ class ReaderViewModel(
         val now = clock()
         activeMs += minOf(now - lastPing, 120_000L)
         lastPing = now
+    }
+
+    override fun onCleared() {
+        translator?.release()
     }
 
     private fun currentGlobalChars(): Long {

@@ -10,4 +10,5 @@ dependencies {
     implementation(project(":engine:books"))
     implementation(project(":core:text"))
     implementation(project(":core:database"))
+    implementation(project(":engine:translation"))
 }

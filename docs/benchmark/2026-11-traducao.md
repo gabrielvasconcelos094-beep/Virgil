@@ -128,3 +128,19 @@ junto) para aparelhos com 4 GB. O motor é o mesmo; muda apenas o "perfil de pro
 3. Consumo de bateria por consulta (Battery Historian) e temperatura em sessões longas.
 4. Ganho do reaproveitamento de prefixo do KV cache (instruções fixas pré-avaliadas).
 5. Ampliar o conjunto de avaliação (≥ 100 palavras por idioma) antes de congelar o prompt.
+
+## Adendo — motor do app (mesma VM, 4 threads)
+
+Medido pelo `EngineHostTest` (o `LocalTranslationEngine` do app, ponte JNI própria, sem repack):
+
+| Consulta | Resultado | Tempo |
+|---|---|---|
+| *scarcely* em "She could scarcely believe…" (inclui carregar o modelo) | mal | 2,5 s |
+| *passé* em "Il a passé l'examen hier…" (modelo já carregado) | realizado | 2,1 s |
+| Frase alemã "Sie schlug das Buch auf…" (10 atualizações parciais) | Ela abriu o livro e começou a ler. | 3,3 s |
+| Palavra pedida durante a tradução de um parágrafo (o parágrafo é cancelado) | promissor | 2,3 s |
+| Consulta repetida | do cache | ~0 s |
+
+Formato final do prompt de palavra (parte fixa → frase → instrução com a palavra) manteve 16/22 no
+conjunto de palavras e aumenta o reaproveitamento do KV cache entre consultas
+(`results/tgemma4b.word-final.json`).

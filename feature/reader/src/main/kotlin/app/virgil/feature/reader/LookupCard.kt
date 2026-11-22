@@ -117,8 +117,9 @@ private fun TranslationArea(t: TranslationUi, isTerm: Boolean, onOpenSettings: (
         TranslationUi.Working -> Row(verticalAlignment = Alignment.CenterVertically) {
             CircularProgressIndicator(Modifier.size(14.dp), strokeWidth = 1.5.dp, color = Virgil.colors.secondary)
             Spacer(Modifier.size(Spacing.sm))
-            Text("traduzindo no aparelho…", style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary)
+            Text("traduzindo neste aparelho…", style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary)
         }
+        is TranslationUi.Streaming -> Text(t.text, style = MaterialTheme.typography.bodyLarge, color = Virgil.colors.primary.copy(alpha = 0.75f))
         is TranslationUi.Ready -> Text(
             t.text,
             style = if (isTerm) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,

@@ -29,6 +29,8 @@ include(":core:text")
 
 // Motores (sem UI)
 include(":engine:books")
+include(":engine:llama")
+include(":engine:translation")
 
 // Funcionalidades (uma por área de navegação)
 include(":feature:library")

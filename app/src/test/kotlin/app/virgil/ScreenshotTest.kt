@@ -104,6 +104,19 @@ class ScreenshotTest {
         }
     }
 
+    @Test fun traducao() {
+        val ctx = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        androidx.work.testing.WorkManagerTestInitHelper.initializeTestWorkManager(ctx)
+        val db = androidx.room.Room.inMemoryDatabaseBuilder(ctx, app.virgil.core.database.VirgilDatabase::class.java).allowMainThreadQueries().build()
+        val store = app.virgil.engine.translation.ModelStore(ctx, db)
+        val translator = object : app.virgil.engine.translation.Translator {
+            override val status = kotlinx.coroutines.flow.MutableStateFlow<app.virgil.engine.translation.EngineStatus>(app.virgil.engine.translation.EngineStatus.NoModel)
+            override fun translate(request: app.virgil.engine.translation.TranslationRequest) = kotlinx.coroutines.flow.emptyFlow<app.virgil.engine.translation.TranslationEvent>()
+            override fun release() {}
+        }
+        shot("traducao", listOf(false)) { app.virgil.feature.settings.TranslationModelRoute(store, translator, onBack = {}) }
+    }
+
     @Test fun capasEMapa() = shot("capas-e-mapa", listOf(false)) {
         Row(Modifier.padding(24.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             listOf("Heart of Darkness" to "Joseph Conrad", "Le Rouge et le Noir" to "Stendhal", "Effi Briest" to "Theodor Fontane").forEach { (t, a) ->
