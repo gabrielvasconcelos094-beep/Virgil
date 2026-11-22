@@ -68,3 +68,13 @@ margens, alinhamento (esquerda ou justificado) e hifenização.
 - Capas ausentes viram **capas tipográficas** determinísticas (mesmo título, mesma capa), em seis
   combinações derivadas da paleta, com filete duplo evocando a lombada de uma edição em tecido.
 - Dificuldade por capítulo como uma faixa de barras finas: sálvia (até B1), verde (B2), terracota (C1+).
+
+## Capturas (Fase 1)
+
+Geradas pelos testes Roborazzi (`./gradlew test`) a partir das telas reais com dados de exemplo:
+[biblioteca clara](capturas/biblioteca-claro.png) · [biblioteca escura](capturas/biblioteca-escuro.png) ·
+[vocabulário claro](capturas/vocabulario-claro.png) · [vocabulário escuro](capturas/vocabulario-escuro.png) ·
+[configurações](capturas/configuracoes-claro.png) · [capas e mapa de dificuldade](capturas/capas-e-mapa-claro.png)
+
+Pendência de polimento: o `Slider` padrão do Material 3 tem trilho espesso demais para a linguagem do
+Virgil; será substituído por um trilho fino personalizado.

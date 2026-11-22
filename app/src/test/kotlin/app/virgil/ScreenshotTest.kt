@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
@@ -68,27 +71,31 @@ class ScreenshotTest {
         entry(5, "exquisita", "deliciosa", "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.", null, Language.ES),
     )
 
-    private fun shot(name: String, dark: Boolean, content: @Composable () -> Unit) {
+    /** Renderiza o conteúdo no tema claro e depois no escuro (um único setContent por teste). */
+    private fun shot(name: String, themes: List<Boolean> = listOf(false, true), content: @Composable () -> Unit) {
+        var dark by mutableStateOf(themes.first())
         compose.setContent {
             VirgilTheme(if (dark) ThemeMode.Dark else ThemeMode.Light) {
                 Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
             }
         }
-        compose.onRoot().captureRoboImage("build/outputs/roborazzi/$name-${if (dark) "escuro" else "claro"}.png")
+        themes.forEach { d ->
+            dark = d
+            compose.waitForIdle()
+            compose.onRoot().captureRoboImage("build/outputs/roborazzi/$name-${if (d) "escuro" else "claro"}.png")
+        }
     }
 
-    @Test fun biblioteca() = listOf(false, true).forEach { d ->
-        shot("biblioteca", d) { LibraryScreen(LibraryUiState(loading = false, books = books, totalBooks = books.size), {}, {}, {}, null) }
+    @Test fun biblioteca() = shot("biblioteca") {
+        LibraryScreen(LibraryUiState(loading = false, books = books, totalBooks = books.size), {}, {}, {}, null)
     }
 
-    @Test fun bibliotecaVazia() = shot("biblioteca-vazia", false) { LibraryScreen(LibraryUiState(loading = false), {}, {}, {}, null) }
+    @Test fun bibliotecaVazia() = shot("biblioteca-vazia", listOf(false)) { LibraryScreen(LibraryUiState(loading = false), {}, {}, {}, null) }
 
-    @Test fun vocabulario() = listOf(false, true).forEach { d ->
-        shot("vocabulario", d) { VocabularyScreen(VocabularyUiState(loading = false, entries = words), {}, {}, {}) }
-    }
+    @Test fun vocabulario() = shot("vocabulario") { VocabularyScreen(VocabularyUiState(loading = false, entries = words), {}, {}, {}) }
 
-    @Test fun configuracoes() = listOf(false, true).forEach { d ->
-        shot("configuracoes", d) {
+    @Test fun configuracoes() = shot("configuracoes") {
+        run {
             SettingsScreen(
                 prefs = AppPreferences(),
                 profiles = Language.Learnable.map { LanguageProfile(it, if (it == Language.EN_GB) CefrLevel.B2 else null) },
@@ -97,7 +104,7 @@ class ScreenshotTest {
         }
     }
 
-    @Test fun capasEMapa() = shot("capas-e-mapa", false) {
+    @Test fun capasEMapa() = shot("capas-e-mapa", listOf(false)) {
         Row(Modifier.padding(24.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             listOf("Heart of Darkness" to "Joseph Conrad", "Le Rouge et le Noir" to "Stendhal", "Effi Briest" to "Theodor Fontane").forEach { (t, a) ->
                 TypographicCover(t, a, modifier = Modifier.width(110.dp))

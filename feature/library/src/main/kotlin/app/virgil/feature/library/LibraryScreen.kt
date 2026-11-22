@@ -115,7 +115,7 @@ fun LibraryScreen(
                         1 -> "1 livro"
                         else -> "${state.totalBooks} livros"
                     },
-                    modifier = Modifier.padding(start = 0.dp),
+                    insetStart = false,
                     trailing = {
                         Row {
                             if (state.totalBooks > 0) {

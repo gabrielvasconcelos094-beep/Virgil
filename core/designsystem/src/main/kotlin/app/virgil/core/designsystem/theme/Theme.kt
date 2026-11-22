@@ -2,6 +2,7 @@ package app.virgil.core.designsystem.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
@@ -62,8 +63,10 @@ fun VirgilTheme(mode: ThemeMode = ThemeMode.System, content: @Composable () -> U
             colorScheme = colors.toMaterial(),
             typography = VirgilTypography,
             shapes = VirgilShapes,
-            content = content,
-        )
+        ) {
+            // Ícones e textos fora de um Surface herdam a cor de texto do tema (evita ícones pretos no escuro).
+            CompositionLocalProvider(LocalContentColor provides colors.textPrimary, content = content)
+        }
     }
 }
 

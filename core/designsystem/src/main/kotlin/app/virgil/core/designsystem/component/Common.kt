@@ -32,9 +32,16 @@ import app.virgil.core.model.CefrRange
 
 /** Cabeçalho de tela editorial: título serifado e subtítulo discreto. */
 @Composable
-fun ScreenHeader(title: String, subtitle: String? = null, modifier: Modifier = Modifier, trailing: @Composable (() -> Unit)? = null) {
+fun ScreenHeader(
+    title: String,
+    subtitle: String? = null,
+    modifier: Modifier = Modifier,
+    /** false quando o contêiner (ex.: grade da estante) já aplica a margem lateral. */
+    insetStart: Boolean = true,
+    trailing: @Composable (() -> Unit)? = null,
+) {
     Row(
-        modifier.fillMaxWidth().padding(start = Spacing.screen, end = Spacing.sm, top = Spacing.xl, bottom = Spacing.md),
+        modifier.fillMaxWidth().padding(start = if (insetStart) Spacing.screen else 0.dp, end = if (insetStart) Spacing.sm else 0.dp, top = Spacing.xl, bottom = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
