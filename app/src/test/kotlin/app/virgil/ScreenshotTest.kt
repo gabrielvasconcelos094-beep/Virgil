@@ -1,0 +1,118 @@
+package app.virgil
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
+import app.virgil.core.data.LanguageProfile
+import app.virgil.core.designsystem.component.DifficultyStrip
+import app.virgil.core.designsystem.component.TypographicCover
+import app.virgil.core.designsystem.theme.VirgilTheme
+import app.virgil.core.model.AnalysisState
+import app.virgil.core.model.AppPreferences
+import app.virgil.core.model.Book
+import app.virgil.core.model.BookFormat
+import app.virgil.core.model.CefrLevel
+import app.virgil.core.model.CefrRange
+import app.virgil.core.model.Language
+import app.virgil.core.model.LearningState
+import app.virgil.core.model.SelectionKind
+import app.virgil.core.model.ThemeMode
+import app.virgil.core.model.VocabularyEntry
+import app.virgil.feature.library.LibraryScreen
+import app.virgil.feature.library.LibraryUiState
+import app.virgil.feature.settings.SettingsScreen
+import app.virgil.feature.vocabulary.VocabularyScreen
+import app.virgil.feature.vocabulary.VocabularyUiState
+import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+
+/**
+ * Renderiza as telas com estados de exemplo para revisão visual do design (não são dados do app).
+ * Saída em app/build/outputs/roborazzi/.
+ */
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [36], qualifiers = "w411dp-h891dp-xxhdpi")
+class ScreenshotTest {
+    @get:Rule val compose = createComposeRule()
+
+    private val books = listOf(
+        book(1, "Mrs Dalloway", "Virginia Woolf", Language.EN_GB, 0.42f, CefrRange(CefrLevel.B2, CefrLevel.C1, 0.7f)),
+        book(2, "Madame Bovary", "Gustave Flaubert", Language.FR, 0.08f, CefrRange(CefrLevel.B2, CefrLevel.B2, 0.6f)),
+        book(3, "Die Verwandlung", "Franz Kafka", Language.DE, 0f, CefrRange(CefrLevel.B1, CefrLevel.B2, 0.6f)),
+        book(4, "Il fu Mattia Pascal", "Luigi Pirandello", Language.IT, 1f, null),
+        book(5, "Niebla", "Miguel de Unamuno", Language.ES, 0.63f, CefrRange(CefrLevel.B2, CefrLevel.C1, 0.5f)),
+        book(6, "Pride and Prejudice", "Jane Austen", Language.EN_GB, 0.15f, CefrRange(CefrLevel.C1, CefrLevel.C1, 0.6f)),
+    )
+
+    private val words = listOf(
+        entry(1, "scarcely", "mal · quase não", "She could scarcely believe what she had witnessed.", "Mrs Dalloway"),
+        entry(2, "lambeaux", "restos · farrapos", "Pendant plusieurs jours de suite des lambeaux d'armée en déroute avaient traversé la ville.", "Boule de suif", Language.FR),
+        entry(3, "Ungeziefer", "inseto · praga", "…fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.", "Die Verwandlung", Language.DE),
+        entry(4, "mezzogiorno", "sul", "Quel ramo del lago di Como, che volge a mezzogiorno…", "I promessi sposi", Language.IT),
+        entry(5, "exquisita", "deliciosa", "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.", null, Language.ES),
+    )
+
+    private fun shot(name: String, dark: Boolean, content: @Composable () -> Unit) {
+        compose.setContent {
+            VirgilTheme(if (dark) ThemeMode.Dark else ThemeMode.Light) {
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
+            }
+        }
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/$name-${if (dark) "escuro" else "claro"}.png")
+    }
+
+    @Test fun biblioteca() = listOf(false, true).forEach { d ->
+        shot("biblioteca", d) { LibraryScreen(LibraryUiState(loading = false, books = books, totalBooks = books.size), {}, {}, {}, null) }
+    }
+
+    @Test fun bibliotecaVazia() = shot("biblioteca-vazia", false) { LibraryScreen(LibraryUiState(loading = false), {}, {}, {}, null) }
+
+    @Test fun vocabulario() = listOf(false, true).forEach { d ->
+        shot("vocabulario", d) { VocabularyScreen(VocabularyUiState(loading = false, entries = words), {}, {}, {}) }
+    }
+
+    @Test fun configuracoes() = listOf(false, true).forEach { d ->
+        shot("configuracoes", d) {
+            SettingsScreen(
+                prefs = AppPreferences(),
+                profiles = Language.Learnable.map { LanguageProfile(it, if (it == Language.EN_GB) CefrLevel.B2 else null) },
+                onBack = {}, onTheme = {}, onReading = {}, onAutoSave = {}, onLevel = { _, _ -> }, onOpenLicenses = {},
+            )
+        }
+    }
+
+    @Test fun capasEMapa() = shot("capas-e-mapa", false) {
+        Row(Modifier.padding(24.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            listOf("Heart of Darkness" to "Joseph Conrad", "Le Rouge et le Noir" to "Stendhal", "Effi Briest" to "Theodor Fontane").forEach { (t, a) ->
+                TypographicCover(t, a, modifier = Modifier.width(110.dp))
+            }
+        }
+        Box(Modifier.padding(start = 24.dp, end = 24.dp, top = 240.dp).width(340.dp)) {
+            DifficultyStrip(listOf(CefrLevel.B1, CefrLevel.B2, CefrLevel.C1, CefrLevel.B2, CefrLevel.B1, CefrLevel.B2, CefrLevel.C2, CefrLevel.C1, null, CefrLevel.B2), height = 40)
+        }
+    }
+
+    private fun book(id: Long, t: String, a: String, l: Language, p: Float, d: CefrRange?) = Book(
+        id, t, a, l, null, BookFormat.EPUB, null, 20, 400_000, 0, null, p, null, d, AnalysisState.Done,
+    )
+
+    private fun entry(id: Long, term: String, tr: String, ctx: String, book: String?, l: Language = Language.EN_GB) = VocabularyEntry(
+        id, term, null, l, SelectionKind.Word, tr, ctx, null, null, book, 0, 0, 1, LearningState.New, null,
+    )
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Backup automático do Android (opcional, controlado pelo usuário no sistema):
+     inclui banco e preferências; exclui livros e o modelo de tradução (grandes e recuperáveis). -->
+<full-backup-content>
+    <exclude domain="file" path="books/" />
+    <exclude domain="file" path="models/" />
+</full-backup-content>

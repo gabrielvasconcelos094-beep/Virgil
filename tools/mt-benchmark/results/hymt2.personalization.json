@@ -1,0 +1,339 @@
+[
+ {
+  "out": "brilhante",
+  "wall_s": 0.731,
+  "prompt_tokens": 90,
+  "prompt_ms": 514.602,
+  "gen_tokens": 5,
+  "gen_ms": 210.526,
+  "lang": "en",
+  "sentence": "She is a bright student.",
+  "word": "bright",
+  "expected": [
+   "inteligente",
+   "brilhante"
+  ]
+ },
+ {
+  "out": "brilhante",
+  "wall_s": 0.732,
+  "prompt_tokens": 89,
+  "prompt_ms": 514.377,
+  "gen_tokens": 5,
+  "gen_ms": 202.349,
+  "lang": "en",
+  "sentence": "His future looks bright.",
+  "word": "bright",
+  "expected": [
+   "promissor",
+   "brilhante",
+   "radiante"
+  ]
+ },
+ {
+  "out": "quase",
+  "wall_s": 0.707,
+  "prompt_tokens": 94,
+  "prompt_ms": 593.936,
+  "gen_tokens": 3,
+  "gen_ms": 104.934,
+  "lang": "en",
+  "sentence": "She could scarcely believe what she had witnessed.",
+  "word": "scarcely",
+  "expected": [
+   "mal",
+   "quase não",
+   "dificilmente"
+  ]
+ },
+ {
+  "out": "desejo",
+  "wall_s": 0.728,
+  "prompt_tokens": 109,
+  "prompt_ms": 546.614,
+  "gen_tokens": 4,
+  "gen_ms": 173.858,
+  "lang": "en",
+  "sentence": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+  "word": "want",
+  "expected": [
+   "procura",
+   "necessidade",
+   "falta"
+  ]
+ },
+ {
+  "out": "correio",
+  "wall_s": 0.698,
+  "prompt_tokens": 94,
+  "prompt_ms": 530.193,
+  "gen_tokens": 4,
+  "gen_ms": 148.978,
+  "lang": "en",
+  "sentence": "He put the kettle on and waited for the post.",
+  "word": "post",
+  "expected": [
+   "correio",
+   "correspondência",
+   "carteiro"
+  ]
+ },
+ {
+  "out": "desistir",
+  "wall_s": 0.814,
+  "prompt_tokens": 93,
+  "prompt_ms": 629.09,
+  "gen_tokens": 4,
+  "gen_ms": 174.397,
+  "lang": "en",
+  "sentence": "He gave up the struggle at last.",
+  "word": "gave up",
+  "expected": [
+   "desistiu",
+   "abandonou",
+   "renunciou"
+  ]
+ },
+ {
+  "out": "passado",
+  "wall_s": 0.672,
+  "prompt_tokens": 105,
+  "prompt_ms": 561.046,
+  "gen_tokens": 3,
+  "gen_ms": 98.888,
+  "lang": "fr",
+  "sentence": "Il a passé l'examen hier, mais il ne connaît pas encore le résultat.",
+  "word": "passé",
+  "expected": [
+   "fez",
+   "prestou"
+  ]
+ },
+ {
+  "out": "cedo",
+  "wall_s": 0.676,
+  "prompt_tokens": 102,
+  "prompt_ms": 548.807,
+  "gen_tokens": 3,
+  "gen_ms": 120.269,
+  "lang": "fr",
+  "sentence": "Longtemps, je me suis couché de bonne heure.",
+  "word": "de bonne heure",
+  "expected": [
+   "cedo"
+  ]
+ },
+ {
+  "out": "lambeaux",
+  "wall_s": 0.861,
+  "prompt_tokens": 108,
+  "prompt_ms": 656.686,
+  "gen_tokens": 4,
+  "gen_ms": 194.844,
+  "lang": "fr",
+  "sentence": "Pendant plusieurs jours de suite des lambeaux d'armée en déroute avaient traversé la ville.",
+  "word": "lambeaux",
+  "expected": [
+   "restos",
+   "farrapos",
+   "fragmentos",
+   "frangalhos"
+  ]
+ },
+ {
+  "out": "novo",
+  "wall_s": 0.732,
+  "prompt_tokens": 114,
+  "prompt_ms": 622.511,
+  "gen_tokens": 3,
+  "gen_ms": 99.67,
+  "lang": "fr",
+  "sentence": "Nous étions à l'Étude, quand le Proviseur entra, suivi d'un nouveau habillé en bourgeois.",
+  "word": "nouveau",
+  "expected": [
+   "novato",
+   "aluno novo",
+   "recém-chegado"
+  ]
+ },
+ {
+  "out": "bateu",
+  "wall_s": 0.721,
+  "prompt_tokens": 97,
+  "prompt_ms": 555.235,
+  "gen_tokens": 4,
+  "gen_ms": 158.308,
+  "lang": "de",
+  "sentence": "Sie schlug das Buch auf und fing an zu lesen.",
+  "word": "schlug",
+  "expected": [
+   "abriu"
+  ]
+ },
+ {
+  "out": "banco",
+  "wall_s": 0.772,
+  "prompt_tokens": 100,
+  "prompt_ms": 653.808,
+  "gen_tokens": 3,
+  "gen_ms": 111.727,
+  "lang": "de",
+  "sentence": "Die Bank am Fluss war leer, nur ein Hund lag darunter.",
+  "word": "Bank",
+  "expected": [
+   "banco"
+  ]
+ },
+ {
+  "out": "mentiu",
+  "wall_s": 0.716,
+  "prompt_tokens": 121,
+  "prompt_ms": 594.51,
+  "gen_tokens": 3,
+  "gen_ms": 113.614,
+  "lang": "de",
+  "sentence": "Jemand mußte Josef K. verleumdet haben, denn ohne daß er etwas Böses getan hätte, wurde er eines Morgens verhaftet.",
+  "word": "verleumdet",
+  "expected": [
+   "caluniado",
+   "difamado"
+  ]
+ },
+ {
+  "out": "vermes",
+  "wall_s": 0.886,
+  "prompt_tokens": 130,
+  "prompt_ms": 757.994,
+  "gen_tokens": 3,
+  "gen_ms": 116.465,
+  "lang": "de",
+  "sentence": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
+  "word": "Ungeziefer",
+  "expected": [
+   "inseto",
+   "verme",
+   "bicho",
+   "praga"
+  ]
+ },
+ {
+  "out": "sul\n\nBrazilian Portuguese: sul",
+  "wall_s": 1.01,
+  "prompt_tokens": 119,
+  "prompt_ms": 582.236,
+  "gen_tokens": 9,
+  "gen_ms": 413.833,
+  "lang": "it",
+  "sentence": "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti.",
+  "word": "mezzogiorno",
+  "expected": [
+   "sul"
+  ]
+ },
+ {
+  "out": "pegue um camarão",
+  "wall_s": 0.935,
+  "prompt_tokens": 108,
+  "prompt_ms": 623.652,
+  "gen_tokens": 7,
+  "gen_ms": 302.121,
+  "lang": "it",
+  "sentence": "Ho preso un granchio: il treno partiva alle sette, non alle otto.",
+  "word": "preso un granchio",
+  "expected": [
+   "cometi um engano",
+   "me enganei",
+   "errei"
+  ]
+ },
+ {
+  "out": "chuva",
+  "wall_s": 0.669,
+  "prompt_tokens": 102,
+  "prompt_ms": 560.411,
+  "gen_tokens": 3,
+  "gen_ms": 99.07,
+  "lang": "it",
+  "sentence": "Verso sera smise di piovere e uscimmo nel giardino.",
+  "word": "smise",
+  "expected": [
+   "parou"
+  ]
+ },
+ {
+  "out": "pedras",
+  "wall_s": 0.646,
+  "prompt_tokens": 111,
+  "prompt_ms": 529.941,
+  "gen_tokens": 3,
+  "gen_ms": 99.826,
+  "lang": "it",
+  "sentence": "Un tempo i Malavoglia erano stati numerosi come i sassi della strada vecchia di Trezza.",
+  "word": "sassi",
+  "expected": [
+   "pedras",
+   "seixos"
+  ]
+ },
+ {
+  "out": "lugar",
+  "wall_s": 0.643,
+  "prompt_tokens": 116,
+  "prompt_ms": 506.886,
+  "gen_tokens": 3,
+  "gen_ms": 103.309,
+  "lang": "es",
+  "sentence": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo.",
+  "word": "lugar",
+  "expected": [
+   "povoado",
+   "aldeia",
+   "lugarejo",
+   "lugar"
+  ]
+ },
+ {
+  "out": "delicioso",
+  "wall_s": 0.728,
+  "prompt_tokens": 108,
+  "prompt_ms": 569.13,
+  "gen_tokens": 4,
+  "gen_ms": 150.931,
+  "lang": "es",
+  "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+  "word": "exquisita",
+  "expected": [
+   "deliciosa",
+   "requintada",
+   "excelente"
+  ]
+ },
+ {
+  "out": "quarto",
+  "wall_s": 0.676,
+  "prompt_tokens": 107,
+  "prompt_ms": 568.793,
+  "gen_tokens": 3,
+  "gen_ms": 95.865,
+  "lang": "es",
+  "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+  "word": "piso",
+  "expected": [
+   "apartamento"
+  ]
+ },
+ {
+  "out": "gravida",
+  "wall_s": 0.684,
+  "prompt_tokens": 99,
+  "prompt_ms": 519.529,
+  "gen_tokens": 4,
+  "gen_ms": 150.311,
+  "lang": "es",
+  "sentence": "Mi hermana está embarazada de su segundo hijo.",
+  "word": "embarazada",
+  "expected": [
+   "grávida"
+  ]
+ }
+]

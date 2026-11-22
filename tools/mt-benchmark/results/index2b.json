@@ -1,0 +1,985 @@
+{
+ "model": "index2b",
+ "family": "qwen35",
+ "file": "Index-Translate-2B.Q4_K_M.gguf",
+ "file_mb": 1312,
+ "load_s": 1.85,
+ "sentences": [
+  {
+   "out": "A Sra. Dalloway disse que compraria as flores ela mesma.",
+   "wall_s": 1.963,
+   "prompt_tokens": 46,
+   "prompt_ms": 470.932,
+   "gen_tokens": 17,
+   "gen_ms": 1486.692,
+   "lang": "en",
+   "src": "Mrs. Dalloway said she would buy the flowers herself.",
+   "ref": "A Sra. Dalloway disse que ela mesma compraria as flores.",
+   "source": "Woolf, Mrs Dalloway (1925)"
+  },
+  {
+   "out": "É uma verdade universalmente reconhecida que um homem com uma boa fortuna precisa de uma esposa.",
+   "wall_s": 2.245,
+   "prompt_tokens": 59,
+   "prompt_ms": 526.807,
+   "gen_tokens": 21,
+   "gen_ms": 1693.663,
+   "lang": "en",
+   "src": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+   "ref": "É uma verdade universalmente reconhecida que um homem solteiro, possuidor de uma boa fortuna, deve estar à procura de uma esposa.",
+   "source": "Austen, Pride and Prejudice (1813)"
+  },
+  {
+   "out": "Eu tinha uma convicção profunda de que, por ela ter criado mim com cuidado, ela não tinha o direito de me criar com brusqueza.",
+   "wall_s": 3.185,
+   "prompt_tokens": 58,
+   "prompt_ms": 597.659,
+   "gen_tokens": 32,
+   "gen_ms": 2568.267,
+   "lang": "en",
+   "src": "I had cherished a profound conviction that her bringing me up by hand gave her no right to bring me up by jerks.",
+   "ref": "Eu nutria a profunda convicção de que o fato de ela ter me criado 'à mão' não lhe dava o direito de me criar aos trancos.",
+   "source": "Dickens, Great Expectations (1861)"
+  },
+  {
+   "out": "A via aquática tranquila que levava aos confins mais distantes da Terra fluía sombria sob um céu nublado — parecia levar para o coração de uma escuridão imensa.",
+   "wall_s": 3.649,
+   "prompt_tokens": 66,
+   "prompt_ms": 478.441,
+   "gen_tokens": 41,
+   "gen_ms": 3139.513,
+   "lang": "en",
+   "src": "The tranquil waterway leading to the uttermost ends of the earth flowed sombre under an overcast sky—seemed to lead into the heart of an immense darkness.",
+   "ref": "O tranquilo curso d'água que leva aos confins da Terra fluía sombrio sob um céu encoberto — parecia conduzir ao coração de uma imensa escuridão.",
+   "source": "Conrad, Heart of Darkness (1899)"
+  },
+  {
+   "out": "Há muito tempo, eu ia dormir cedo.",
+   "wall_s": 1.35,
+   "prompt_tokens": 46,
+   "prompt_ms": 470.211,
+   "gen_tokens": 11,
+   "gen_ms": 821.988,
+   "lang": "fr",
+   "src": "Longtemps, je me suis couché de bonne heure.",
+   "ref": "Durante muito tempo, costumava deitar-me cedo.",
+   "source": "Proust, Du côté de chez Swann (1913)"
+  },
+  {
+   "out": "Estávamos na sala de estudos quando o diretor entrou, seguido por um novo rapaz vestido como um burguês e um aluno da classe que carregava um grande pupitre.",
+   "wall_s": 3.677,
+   "prompt_tokens": 72,
+   "prompt_ms": 625.446,
+   "gen_tokens": 37,
+   "gen_ms": 3022.052,
+   "lang": "fr",
+   "src": "Nous étions à l'Étude, quand le Proviseur entra, suivi d'un nouveau habillé en bourgeois et d'un garçon de classe qui portait un grand pupitre.",
+   "ref": "Estávamos na sala de estudos quando o diretor entrou, seguido de um novato vestido à paisana e de um bedel que carregava uma grande carteira escolar.",
+   "source": "Flaubert, Madame Bovary (1857)"
+  },
+  {
+   "out": "Durante vários dias seguidos, pedaços da armada em retirada atravessaram a cidade.",
+   "wall_s": 2.291,
+   "prompt_tokens": 56,
+   "prompt_ms": 551.613,
+   "gen_tokens": 21,
+   "gen_ms": 1721.814,
+   "lang": "fr",
+   "src": "Pendant plusieurs jours de suite des lambeaux d'armée en déroute avaient traversé la ville.",
+   "ref": "Durante vários dias seguidos, restos de um exército em debandada haviam atravessado a cidade.",
+   "source": "Maupassant, Boule de suif (1880)"
+  },
+  {
+   "out": "Ele passou o exame ontem, mas ainda não sabe o resultado.",
+   "wall_s": 1.485,
+   "prompt_tokens": 51,
+   "prompt_ms": 458.195,
+   "gen_tokens": 14,
+   "gen_ms": 1008.139,
+   "lang": "fr",
+   "src": "Il a passé l'examen hier, mais il ne connaît pas encore le résultat.",
+   "ref": "Ele fez a prova ontem, mas ainda não sabe o resultado.",
+   "source": "construída (falso cognato: passer un examen)"
+  },
+  {
+   "out": "Quando Gregor Samsa acordou numa manhã, com sonhos inquietos, ele se encontrou em sua cama transformado num inseto monstruoso.",
+   "wall_s": 3.049,
+   "prompt_tokens": 71,
+   "prompt_ms": 590.188,
+   "gen_tokens": 32,
+   "gen_ms": 2437.209,
+   "lang": "de",
+   "src": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
+   "ref": "Quando certa manhã Gregor Samsa despertou de sonhos inquietos, encontrou-se em sua cama metamorfoseado num inseto monstruoso.",
+   "source": "Kafka, Die Verwandlung (1915)"
+  },
+  {
+   "out": "Alguém precisava difamar Josef K., pois, sem que ele tivesse feito nada de ruim, ele foi preso numa manhã.",
+   "wall_s": 2.459,
+   "prompt_tokens": 65,
+   "prompt_ms": 553.054,
+   "gen_tokens": 28,
+   "gen_ms": 1888.256,
+   "lang": "de",
+   "src": "Jemand mußte Josef K. verleumdet haben, denn ohne daß er etwas Böses getan hätte, wurde er eines Morgens verhaftet.",
+   "ref": "Alguém certamente havia caluniado Josef K., pois, sem que tivesse feito qualquer mal, ele foi detido certa manhã.",
+   "source": "Kafka, Der Process (1925)"
+  },
+  {
+   "out": "Ele abriu o livro e começou a ler.",
+   "wall_s": 1.214,
+   "prompt_tokens": 46,
+   "prompt_ms": 485.929,
+   "gen_tokens": 10,
+   "gen_ms": 707.912,
+   "lang": "de",
+   "src": "Sie schlug das Buch auf und fing an zu lesen.",
+   "ref": "Ela abriu o livro e começou a ler.",
+   "source": "construída (verbo separável aufschlagen)"
+  },
+  {
+   "out": "Que feliz eu sou por estar longe!",
+   "wall_s": 1.118,
+   "prompt_tokens": 45,
+   "prompt_ms": 500.932,
+   "gen_tokens": 9,
+   "gen_ms": 596.831,
+   "lang": "de",
+   "src": "Wie froh bin ich, daß ich weg bin!",
+   "ref": "Como estou contente por ter partido!",
+   "source": "Goethe, Die Leiden des jungen Werthers (1774)"
+  },
+  {
+   "out": "Aquele ramo do Lago de Como, que se curva para o sul, entre duas cadeias de montanhas ininterruptas, tudo cheio de vales e golfos, parece, quase de repente, se contrair e tomar o curso e a forma de um rio.",
+   "wall_s": 5.511,
+   "prompt_tokens": 92,
+   "prompt_ms": 679.157,
+   "gen_tokens": 57,
+   "gen_ms": 4808.562,
+   "lang": "it",
+   "src": "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti, tutto a seni e a golfi, vien, quasi a un tratto, a ristringersi, e a prender corso e figura di fiume.",
+   "ref": "Aquele braço do lago de Como que se volta para o sul, entre duas cadeias ininterruptas de montes, todo feito de enseadas e golfos, vem, quase de repente, a estreitar-se e a tomar curso e forma de rio.",
+   "source": "Manzoni, I promessi sposi (1840)"
+  },
+  {
+   "out": "Uma das poucas coisas, talvez até a única que eu sabia com certeza, era esta: que meu nome era Mattia Pascal.",
+   "wall_s": 2.877,
+   "prompt_tokens": 61,
+   "prompt_ms": 649.105,
+   "gen_tokens": 27,
+   "gen_ms": 2206.034,
+   "lang": "it",
+   "src": "Una delle poche cose, anzi forse la sola ch'io sapessi di certo era questa: che mi chiamavo Mattia Pascal.",
+   "ref": "Uma das poucas coisas, ou melhor, talvez a única que eu sabia com certeza era esta: que eu me chamava Mattia Pascal.",
+   "source": "Pirandello, Il fu Mattia Pascal (1904)"
+  },
+  {
+   "out": "Antigamente, os Malavoglia eram tantos quanto os pedras da estrada antiga de Trezza.",
+   "wall_s": 2.31,
+   "prompt_tokens": 55,
+   "prompt_ms": 456.798,
+   "gen_tokens": 23,
+   "gen_ms": 1837.611,
+   "lang": "it",
+   "src": "Un tempo i Malavoglia erano stati numerosi come i sassi della strada vecchia di Trezza.",
+   "ref": "Outrora os Malavoglia haviam sido tão numerosos quanto as pedras da estrada velha de Trezza.",
+   "source": "Verga, I Malavoglia (1881)"
+  },
+  {
+   "out": "Eu peguei um granchio: o trem partia às sete, não às oito.",
+   "wall_s": 2.388,
+   "prompt_tokens": 52,
+   "prompt_ms": 580.219,
+   "gen_tokens": 21,
+   "gen_ms": 1780.559,
+   "lang": "it",
+   "src": "Ho preso un granchio: il treno partiva alle sette, non alle otto.",
+   "ref": "Cometi um engano: o trem partia às sete, não às oito.",
+   "source": "construída (expressão idiomática)"
+  },
+  {
+   "out": "Em um lugar da Mancha, cujo nome não quero lembrar, não faz muito tempo que vivia um nobre dos que usam lança no estandarte, com uma antiga aljava, um cavalo de cor branca fina e um galgo corredor.",
+   "wall_s": 5.425,
+   "prompt_tokens": 83,
+   "prompt_ms": 766.142,
+   "gen_tokens": 52,
+   "gen_ms": 4626.754,
+   "lang": "es",
+   "src": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor.",
+   "ref": "Num povoado da Mancha, de cujo nome não quero me lembrar, não faz muito tempo vivia um fidalgo desses de lança no cabide, escudo antigo, rocim magro e galgo corredor.",
+   "source": "Cervantes, Don Quijote (1605)"
+  },
+  {
+   "out": "A cidade heroica estava dormindo a sestas.",
+   "wall_s": 1.414,
+   "prompt_tokens": 44,
+   "prompt_ms": 487.46,
+   "gen_tokens": 12,
+   "gen_ms": 908.801,
+   "lang": "es",
+   "src": "La heroica ciudad dormía la siesta.",
+   "ref": "A heroica cidade dormia a sesta.",
+   "source": "Clarín, La Regenta (1884)"
+  },
+  {
+   "out": "O jantar estava delicioso, embora o quarto dos meus tios seja bem pequeno.",
+   "wall_s": 1.917,
+   "prompt_tokens": 51,
+   "prompt_ms": 425.84,
+   "gen_tokens": 17,
+   "gen_ms": 1471.723,
+   "lang": "es",
+   "src": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+   "ref": "O jantar estava delicioso, embora o apartamento dos meus tios seja bem pequeno.",
+   "source": "construída (falsos cognatos: exquisita, piso)"
+  },
+  {
+   "out": "Ao aparecer na porta de sua casa, Augusto estendeu o braço direito, com a palma da mão virada para baixo e aberta, e, com os olhos fixos no céu, permaneceu parado por um momento nessa postura imponente e majestosa.",
+   "wall_s": 5.257,
+   "prompt_tokens": 80,
+   "prompt_ms": 729.506,
+   "gen_tokens": 55,
+   "gen_ms": 4511.984,
+   "lang": "es",
+   "src": "Al aparecer Augusto a la puerta de su casa extendió el brazo derecho, con la mano palma abajo y abierta, y dirigiendo los ojos al cielo quedóse un momento parado en esta actitud estatuaria y augusta.",
+   "ref": "Ao aparecer à porta de sua casa, Augusto estendeu o braço direito, com a mão aberta e a palma para baixo, e, dirigindo os olhos ao céu, ficou um momento parado nessa atitude estatuária e augusta.",
+   "source": "Unamuno, Niebla (1914)"
+  }
+ ],
+ "words_context": [
+  {
+   "out": "brilhante",
+   "wall_s": 0.8,
+   "prompt_tokens": 61,
+   "prompt_ms": 515.894,
+   "gen_tokens": 4,
+   "gen_ms": 265.092,
+   "lang": "en",
+   "sentence": "She is a bright student.",
+   "word": "bright",
+   "expected": [
+    "inteligente",
+    "brilhante"
+   ]
+  },
+  {
+   "out": "brilhante",
+   "wall_s": 0.809,
+   "prompt_tokens": 60,
+   "prompt_ms": 539.439,
+   "gen_tokens": 4,
+   "gen_ms": 252.369,
+   "lang": "en",
+   "sentence": "His future looks bright.",
+   "word": "bright",
+   "expected": [
+    "promissor",
+    "brilhante",
+    "radiante"
+   ]
+  },
+  {
+   "out": "Quase não conseguia acreditar no que tinha visto.",
+   "wall_s": 1.478,
+   "prompt_tokens": 66,
+   "prompt_ms": 531.145,
+   "gen_tokens": 12,
+   "gen_ms": 931.764,
+   "lang": "en",
+   "sentence": "She could scarcely believe what she had witnessed.",
+   "word": "scarcely",
+   "expected": [
+    "mal",
+    "quase não",
+    "dificilmente"
+   ]
+  },
+  {
+   "out": "Precisa de uma esposa.",
+   "wall_s": 1.122,
+   "prompt_tokens": 81,
+   "prompt_ms": 663.384,
+   "gen_tokens": 7,
+   "gen_ms": 443.044,
+   "lang": "en",
+   "sentence": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+   "word": "want",
+   "expected": [
+    "procura",
+    "necessidade",
+    "falta"
+   ]
+  },
+  {
+   "out": "cartão-postal",
+   "wall_s": 0.835,
+   "prompt_tokens": 66,
+   "prompt_ms": 511.973,
+   "gen_tokens": 5,
+   "gen_ms": 307.16,
+   "lang": "en",
+   "sentence": "He put the kettle on and waited for the post.",
+   "word": "post",
+   "expected": [
+    "correio",
+    "correspondência",
+    "carteiro"
+   ]
+  },
+  {
+   "out": "Ele finalmente desistiu da luta.",
+   "wall_s": 1.256,
+   "prompt_tokens": 65,
+   "prompt_ms": 566.674,
+   "gen_tokens": 9,
+   "gen_ms": 664.606,
+   "lang": "en",
+   "sentence": "He gave up the struggle at last.",
+   "word": "gave up",
+   "expected": [
+    "desistiu",
+    "abandonou",
+    "renunciou"
+   ]
+  },
+  {
+   "out": "já feito",
+   "wall_s": 0.709,
+   "prompt_tokens": 73,
+   "prompt_ms": 547.56,
+   "gen_tokens": 3,
+   "gen_ms": 142.173,
+   "lang": "fr",
+   "sentence": "Il a passé l'examen hier, mais il ne connaît pas encore le résultat.",
+   "word": "passé",
+   "expected": [
+    "fez",
+    "prestou"
+   ]
+  },
+  {
+   "out": "temprano",
+   "wall_s": 0.795,
+   "prompt_tokens": 69,
+   "prompt_ms": 564.498,
+   "gen_tokens": 4,
+   "gen_ms": 209.713,
+   "lang": "fr",
+   "sentence": "Longtemps, je me suis couché de bonne heure.",
+   "word": "de bonne heure",
+   "expected": [
+    "cedo"
+   ]
+  },
+  {
+   "out": "lençóis",
+   "wall_s": 0.952,
+   "prompt_tokens": 79,
+   "prompt_ms": 702.405,
+   "gen_tokens": 4,
+   "gen_ms": 219.837,
+   "lang": "fr",
+   "sentence": "Pendant plusieurs jours de suite des lambeaux d'armée en déroute avaient traversé la ville.",
+   "word": "lambeaux",
+   "expected": [
+    "restos",
+    "farrapos",
+    "fragmentos",
+    "frangalhos"
+   ]
+  },
+  {
+   "out": "Novo",
+   "wall_s": 0.957,
+   "prompt_tokens": 81,
+   "prompt_ms": 767.896,
+   "gen_tokens": 3,
+   "gen_ms": 172.092,
+   "lang": "fr",
+   "sentence": "Nous étions à l'Étude, quand le Proviseur entra, suivi d'un nouveau habillé en bourgeois.",
+   "word": "nouveau",
+   "expected": [
+    "novato",
+    "aluno novo",
+    "recém-chegado"
+   ]
+  },
+  {
+   "out": "abriu",
+   "wall_s": 0.757,
+   "prompt_tokens": 68,
+   "prompt_ms": 548.256,
+   "gen_tokens": 3,
+   "gen_ms": 188.123,
+   "lang": "de",
+   "sentence": "Sie schlug das Buch auf und fing an zu lesen.",
+   "word": "schlug",
+   "expected": [
+    "abriu"
+   ]
+  },
+  {
+   "out": "Banca",
+   "wall_s": 0.858,
+   "prompt_tokens": 68,
+   "prompt_ms": 637.264,
+   "gen_tokens": 3,
+   "gen_ms": 200.371,
+   "lang": "de",
+   "sentence": "Die Bank am Fluss war leer, nur ein Hund lag darunter.",
+   "word": "Bank",
+   "expected": [
+    "banco"
+   ]
+  },
+  {
+   "out": "caluniado",
+   "wall_s": 1.046,
+   "prompt_tokens": 89,
+   "prompt_ms": 716.97,
+   "gen_tokens": 4,
+   "gen_ms": 311.165,
+   "lang": "de",
+   "sentence": "Jemand mußte Josef K. verleumdet haben, denn ohne daß er etwas Böses getan hätte, wurde er eines Morgens verhaftet.",
+   "word": "verleumdet",
+   "expected": [
+    "caluniado",
+    "difamado"
+   ]
+  },
+  {
+   "out": "Formiga",
+   "wall_s": 0.833,
+   "prompt_tokens": 95,
+   "prompt_ms": 677.584,
+   "gen_tokens": 3,
+   "gen_ms": 139.126,
+   "lang": "de",
+   "sentence": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
+   "word": "Ungeziefer",
+   "expected": [
+    "inseto",
+    "verme",
+    "bicho",
+    "praga"
+   ]
+  },
+  {
+   "out": "mezzogiorno",
+   "wall_s": 1.015,
+   "prompt_tokens": 88,
+   "prompt_ms": 644.574,
+   "gen_tokens": 5,
+   "gen_ms": 353.504,
+   "lang": "it",
+   "sentence": "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti.",
+   "word": "mezzogiorno",
+   "expected": [
+    "sul"
+   ]
+  },
+  {
+   "out": "peguei um granchio",
+   "wall_s": 1.344,
+   "prompt_tokens": 78,
+   "prompt_ms": 687.535,
+   "gen_tokens": 8,
+   "gen_ms": 642.031,
+   "lang": "it",
+   "sentence": "Ho preso un granchio: il treno partiva alle sette, non alle otto.",
+   "word": "preso un granchio",
+   "expected": [
+    "cometi um engano",
+    "me enganei",
+    "errei"
+   ]
+  },
+  {
+   "out": "parou de chover",
+   "wall_s": 1.185,
+   "prompt_tokens": 72,
+   "prompt_ms": 700.463,
+   "gen_tokens": 6,
+   "gen_ms": 463.07,
+   "lang": "it",
+   "sentence": "Verso sera smise di piovere e uscimmo nel giardino.",
+   "word": "smise",
+   "expected": [
+    "parou"
+   ]
+  },
+  {
+   "out": "pedras",
+   "wall_s": 0.922,
+   "prompt_tokens": 78,
+   "prompt_ms": 719.378,
+   "gen_tokens": 3,
+   "gen_ms": 185.447,
+   "lang": "it",
+   "sentence": "Un tempo i Malavoglia erano stati numerosi come i sassi della strada vecchia di Trezza.",
+   "word": "sassi",
+   "expected": [
+    "pedras",
+    "seixos"
+   ]
+  },
+  {
+   "out": "Lugar",
+   "wall_s": 1.059,
+   "prompt_tokens": 83,
+   "prompt_ms": 853.824,
+   "gen_tokens": 3,
+   "gen_ms": 187.634,
+   "lang": "es",
+   "sentence": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo.",
+   "word": "lugar",
+   "expected": [
+    "povoado",
+    "aldeia",
+    "lugarejo",
+    "lugar"
+   ]
+  },
+  {
+   "out": "Exquisito",
+   "wall_s": 0.741,
+   "prompt_tokens": 74,
+   "prompt_ms": 524.821,
+   "gen_tokens": 4,
+   "gen_ms": 197.686,
+   "lang": "es",
+   "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+   "word": "exquisita",
+   "expected": [
+    "deliciosa",
+    "requintada",
+    "excelente"
+   ]
+  },
+  {
+   "out": "sótão",
+   "wall_s": 0.838,
+   "prompt_tokens": 73,
+   "prompt_ms": 568.283,
+   "gen_tokens": 4,
+   "gen_ms": 248.362,
+   "lang": "es",
+   "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+   "word": "piso",
+   "expected": [
+    "apartamento"
+   ]
+  },
+  {
+   "out": "Grávida",
+   "wall_s": 0.739,
+   "prompt_tokens": 68,
+   "prompt_ms": 450.019,
+   "gen_tokens": 4,
+   "gen_ms": 269.491,
+   "lang": "es",
+   "sentence": "Mi hermana está embarazada de su segundo hijo.",
+   "word": "embarazada",
+   "expected": [
+    "grávida"
+   ]
+  }
+ ],
+ "words_direct": [
+  {
+   "out": "Brilhante",
+   "wall_s": 0.979,
+   "prompt_tokens": 70,
+   "prompt_ms": 689.025,
+   "gen_tokens": 4,
+   "gen_ms": 267.095,
+   "lang": "en",
+   "sentence": "She is a bright student.",
+   "word": "bright",
+   "expected": [
+    "inteligente",
+    "brilhante"
+   ]
+  },
+  {
+   "out": "Promissor",
+   "wall_s": 0.784,
+   "prompt_tokens": 69,
+   "prompt_ms": 584.779,
+   "gen_tokens": 3,
+   "gen_ms": 179.658,
+   "lang": "en",
+   "sentence": "His future looks bright.",
+   "word": "bright",
+   "expected": [
+    "promissor",
+    "brilhante",
+    "radiante"
+   ]
+  },
+  {
+   "out": "Ela mal podia acreditar no que tinha visto.",
+   "wall_s": 1.867,
+   "prompt_tokens": 77,
+   "prompt_ms": 827.083,
+   "gen_tokens": 11,
+   "gen_ms": 1015.316,
+   "lang": "en",
+   "sentence": "She could scarcely believe what she had witnessed.",
+   "word": "scarcely",
+   "expected": [
+    "mal",
+    "quase não",
+    "dificilmente"
+   ]
+  },
+  {
+   "out": "Precisa de uma esposa.",
+   "wall_s": 1.344,
+   "prompt_tokens": 90,
+   "prompt_ms": 644.805,
+   "gen_tokens": 7,
+   "gen_ms": 671.085,
+   "lang": "en",
+   "sentence": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+   "word": "want",
+   "expected": [
+    "procura",
+    "necessidade",
+    "falta"
+   ]
+  },
+  {
+   "out": "O post",
+   "wall_s": 0.879,
+   "prompt_tokens": 75,
+   "prompt_ms": 685.474,
+   "gen_tokens": 3,
+   "gen_ms": 171.701,
+   "lang": "en",
+   "sentence": "He put the kettle on and waited for the post.",
+   "word": "post",
+   "expected": [
+    "correio",
+    "correspondência",
+    "carteiro"
+   ]
+  },
+  {
+   "out": "Ele desistiu da luta por fim.",
+   "wall_s": 1.464,
+   "prompt_tokens": 76,
+   "prompt_ms": 754.862,
+   "gen_tokens": 10,
+   "gen_ms": 693.087,
+   "lang": "en",
+   "sentence": "He gave up the struggle at last.",
+   "word": "gave up",
+   "expected": [
+    "desistiu",
+    "abandonou",
+    "renunciou"
+   ]
+  },
+  {
+   "out": "resultado",
+   "wall_s": 0.834,
+   "prompt_tokens": 83,
+   "prompt_ms": 647.725,
+   "gen_tokens": 3,
+   "gen_ms": 170.185,
+   "lang": "fr",
+   "sentence": "Il a passé l'examen hier, mais il ne connaît pas encore le résultat.",
+   "word": "passé",
+   "expected": [
+    "fez",
+    "prestou"
+   ]
+  },
+  {
+   "out": "temprano",
+   "wall_s": 0.975,
+   "prompt_tokens": 80,
+   "prompt_ms": 694.409,
+   "gen_tokens": 4,
+   "gen_ms": 260.071,
+   "lang": "fr",
+   "sentence": "Longtemps, je me suis couché de bonne heure.",
+   "word": "de bonne heure",
+   "expected": [
+    "cedo"
+   ]
+  },
+  {
+   "out": "barris de guerra",
+   "wall_s": 1.133,
+   "prompt_tokens": 89,
+   "prompt_ms": 685.226,
+   "gen_tokens": 6,
+   "gen_ms": 430.095,
+   "lang": "fr",
+   "sentence": "Pendant plusieurs jours de suite des lambeaux d'armée en déroute avaient traversé la ville.",
+   "word": "lambeaux",
+   "expected": [
+    "restos",
+    "farrapos",
+    "fragmentos",
+    "frangalhos"
+   ]
+  },
+  {
+   "out": "Novo",
+   "wall_s": 0.958,
+   "prompt_tokens": 91,
+   "prompt_ms": 752.96,
+   "gen_tokens": 3,
+   "gen_ms": 182.751,
+   "lang": "fr",
+   "sentence": "Nous étions à l'Étude, quand le Proviseur entra, suivi d'un nouveau habillé en bourgeois.",
+   "word": "nouveau",
+   "expected": [
+    "novato",
+    "aluno novo",
+    "recém-chegado"
+   ]
+  },
+  {
+   "out": "abriu",
+   "wall_s": 0.784,
+   "prompt_tokens": 78,
+   "prompt_ms": 591.808,
+   "gen_tokens": 3,
+   "gen_ms": 173.448,
+   "lang": "de",
+   "sentence": "Sie schlug das Buch auf und fing an zu lesen.",
+   "word": "schlug",
+   "expected": [
+    "abriu"
+   ]
+  },
+  {
+   "out": "Banco",
+   "wall_s": 0.925,
+   "prompt_tokens": 77,
+   "prompt_ms": 716.654,
+   "gen_tokens": 3,
+   "gen_ms": 191.307,
+   "lang": "de",
+   "sentence": "Die Bank am Fluss war leer, nur ein Hund lag darunter.",
+   "word": "Bank",
+   "expected": [
+    "banco"
+   ]
+  },
+  {
+   "out": "difamou",
+   "wall_s": 1.137,
+   "prompt_tokens": 101,
+   "prompt_ms": 879.472,
+   "gen_tokens": 4,
+   "gen_ms": 233.137,
+   "lang": "de",
+   "sentence": "Jemand mußte Josef K. verleumdet haben, denn ohne daß er etwas Böses getan hätte, wurde er eines Morgens verhaftet.",
+   "word": "verleumdet",
+   "expected": [
+    "caluniado",
+    "difamado"
+   ]
+  },
+  {
+   "out": "Inset gigante",
+   "wall_s": 0.919,
+   "prompt_tokens": 107,
+   "prompt_ms": 707.993,
+   "gen_tokens": 4,
+   "gen_ms": 191.853,
+   "lang": "de",
+   "sentence": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
+   "word": "Ungeziefer",
+   "expected": [
+    "inseto",
+    "verme",
+    "bicho",
+    "praga"
+   ]
+  },
+  {
+   "out": "meio-dia",
+   "wall_s": 1.176,
+   "prompt_tokens": 98,
+   "prompt_ms": 807.707,
+   "gen_tokens": 5,
+   "gen_ms": 346.458,
+   "lang": "it",
+   "sentence": "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti.",
+   "word": "mezzogiorno",
+   "expected": [
+    "sul"
+   ]
+  },
+  {
+   "out": "peguei um camarão",
+   "wall_s": 1.337,
+   "prompt_tokens": 90,
+   "prompt_ms": 782.668,
+   "gen_tokens": 7,
+   "gen_ms": 538.659,
+   "lang": "it",
+   "sentence": "Ho preso un granchio: il treno partiva alle sette, non alle otto.",
+   "word": "preso un granchio",
+   "expected": [
+    "cometi um engano",
+    "me enganei",
+    "errei"
+   ]
+  },
+  {
+   "out": "choveu",
+   "wall_s": 0.974,
+   "prompt_tokens": 81,
+   "prompt_ms": 691.802,
+   "gen_tokens": 4,
+   "gen_ms": 265.577,
+   "lang": "it",
+   "sentence": "Verso sera smise di piovere e uscimmo nel giardino.",
+   "word": "smise",
+   "expected": [
+    "parou"
+   ]
+  },
+  {
+   "out": "pedras da estrada",
+   "wall_s": 1.18,
+   "prompt_tokens": 87,
+   "prompt_ms": 817.535,
+   "gen_tokens": 5,
+   "gen_ms": 342.369,
+   "lang": "it",
+   "sentence": "Un tempo i Malavoglia erano stati numerosi come i sassi della strada vecchia di Trezza.",
+   "word": "sassi",
+   "expected": [
+    "pedras",
+    "seixos"
+   ]
+  },
+  {
+   "out": "localidade",
+   "wall_s": 0.877,
+   "prompt_tokens": 93,
+   "prompt_ms": 682.779,
+   "gen_tokens": 3,
+   "gen_ms": 173.594,
+   "lang": "es",
+   "sentence": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo.",
+   "word": "lugar",
+   "expected": [
+    "povoado",
+    "aldeia",
+    "lugarejo",
+    "lugar"
+   ]
+  },
+  {
+   "out": "Delicioso",
+   "wall_s": 0.833,
+   "prompt_tokens": 85,
+   "prompt_ms": 541.102,
+   "gen_tokens": 4,
+   "gen_ms": 271.732,
+   "lang": "es",
+   "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+   "word": "exquisita",
+   "expected": [
+    "deliciosa",
+    "requintada",
+    "excelente"
+   ]
+  },
+  {
+   "out": "chão",
+   "wall_s": 0.785,
+   "prompt_tokens": 83,
+   "prompt_ms": 624.697,
+   "gen_tokens": 3,
+   "gen_ms": 147.831,
+   "lang": "es",
+   "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+   "word": "piso",
+   "expected": [
+    "apartamento"
+   ]
+  },
+  {
+   "out": "Grávida",
+   "wall_s": 0.955,
+   "prompt_tokens": 80,
+   "prompt_ms": 700.155,
+   "gen_tokens": 4,
+   "gen_ms": 239.003,
+   "lang": "es",
+   "sentence": "Mi hermana está embarazada de su segundo hijo.",
+   "word": "embarazada",
+   "expected": [
+    "grávida"
+   ]
+  }
+ ],
+ "paragraphs": [
+  {
+   "out": "Por ter morado em Westminster — quantos anos já se passaram? Mais de vinte — até mesmo no meio do tráfego ou ao acordar à noite, Clarissa tinha certeza de que havia um silêncio especial, ou solenidade; uma pausa indescritível; uma suspensão (mas talvez fosse o coração dela, afetado, como diziam, pela gripe) antes de o Big Ben bater.",
+   "wall_s": 8.175,
+   "prompt_tokens": 105,
+   "prompt_ms": 663.086,
+   "gen_tokens": 85,
+   "gen_ms": 7488.753,
+   "lang": "en",
+   "src": "For having lived in Westminster—how many years now? over twenty,—one feels even in the midst of the traffic, or waking at night, Clarissa was positive, a particular hush, or solemnity; an indescribable pause; a suspense (but that might be her heart, affected, they said, by influenza) before Big Ben strikes.",
+   "source": "Woolf, Mrs Dalloway (1925)"
+  },
+  {
+   "out": "Às vezes, assim que minha vela se apagava, meus olhos se fechavam tão rápido que eu não tinha tempo de pensar: «Vou dormir». E, meia hora depois, a ideia de que já era hora de procurar o sono me acordava.",
+   "wall_s": 5.024,
+   "prompt_tokens": 95,
+   "prompt_ms": 582.39,
+   "gen_tokens": 54,
+   "gen_ms": 4420.186,
+   "lang": "fr",
+   "src": "Parfois, à peine ma bougie éteinte, mes yeux se fermaient si vite que je n'avais pas le temps de me dire : « Je m'endors. » Et, une demi-heure après, la pensée qu'il était temps de chercher le sommeil m'éveillait.",
+   "source": "Proust, Du côté de chez Swann (1913)"
+  },
+  {
+   "out": "Ele estava deitado em seu costas duro e cor de blindado, e quando levantava um pouco a cabeça, via seu abdômen arredondado e marrom, dividido por curvas rígidas. A altura desse ponto era onde a colcha do leito, pronta para cair completamente, mal ainda podia ser mantida.",
+   "wall_s": 6.496,
+   "prompt_tokens": 104,
+   "prompt_ms": 771.378,
+   "gen_tokens": 68,
+   "gen_ms": 5700.12,
+   "lang": "de",
+   "src": "Er lag auf seinem panzerartig harten Rücken und sah, wenn er den Kopf ein wenig hob, seinen gewölbten, braunen, von bogenförmigen Versteifungen geteilten Bauch, auf dessen Höhe sich die Bettdecke, zum gänzlichen Niedergleiten bereit, kaum noch erhalten konnte.",
+   "source": "Kafka, Die Verwandlung (1915)"
+  },
+  {
+   "out": "Era uma vez... — Um rei! — dirão logo meus pequenos leitores. Não, pessoal, vocês erraram. Era uma vez um pedaço de madeira. Não era madeira de luxo, mas apenas um pedaço simples da pilha, daqueles que se colocam no inverno nas fornalhas e no fogãozinho para acender o fogo e aquecer os cômodos.",
+   "wall_s": 7.459,
+   "prompt_tokens": 117,
+   "prompt_ms": 732.372,
+   "gen_tokens": 79,
+   "gen_ms": 6704.0,
+   "lang": "it",
+   "src": "C'era una volta... — Un re! — diranno subito i miei piccoli lettori. No, ragazzi, avete sbagliato. C'era una volta un pezzo di legno. Non era un legno di lusso, ma un semplice pezzo da catasta, di quelli che d'inverno si mettono nelle stufe e nei caminetti per accendere il fuoco e per riscaldare le stanze.",
+   "source": "Collodi, Le avventure di Pinocchio (1883)"
+  },
+  {
+   "out": "Eu devia ter uns onze anos quando aquilo aconteceu. Meu avô, que era um homem de poucas palavras e com muitas manias, pegou minha mão e me levou até o cercado, onde, segundo ele, eram guardados os segredos da família.",
+   "wall_s": 5.076,
+   "prompt_tokens": 89,
+   "prompt_ms": 853.01,
+   "gen_tokens": 55,
+   "gen_ms": 4202.295,
+   "lang": "es",
+   "src": "Tendría yo unos once años cuando ocurrió aquello. Mi abuelo, que era hombre de pocas palabras y de muchas manías, me tomó de la mano y me llevó hasta el corral, donde, según decía, se guardaban los secretos de la familia.",
+   "source": "construído no estilo realista do séc. XIX"
+  }
+ ],
+ "rss_mb_after": 5030.8984375
+}

@@ -1,0 +1,383 @@
+[
+ {
+  "out": "Ela é uma <b>aluna brilhante</b>.",
+  "wall_s": 2.611,
+  "prompt_tokens": 99,
+  "prompt_ms": 1294.278,
+  "gen_tokens": 12,
+  "gen_ms": 1313.369,
+  "lang": "en",
+  "sentence": "She is a bright student.",
+  "word": "bright",
+  "expected": [
+   "inteligente",
+   "brilhante"
+  ],
+  "gloss": "aluna brilhante",
+  "sentence_pt": "Ela é uma aluna brilhante."
+ },
+ {
+  "out": "Seu futuro parece <b>promissor</b>.",
+  "wall_s": 2.502,
+  "prompt_tokens": 98,
+  "prompt_ms": 1377.777,
+  "gen_tokens": 11,
+  "gen_ms": 1120.679,
+  "lang": "en",
+  "sentence": "His future looks bright.",
+  "word": "bright",
+  "expected": [
+   "promissor",
+   "brilhante",
+   "radiante"
+  ],
+  "gloss": "promissor",
+  "sentence_pt": "Seu futuro parece promissor."
+ },
+ {
+  "out": "Ela mal conseguia acreditar no que tinha presenciado.",
+  "wall_s": 2.791,
+  "prompt_tokens": 104,
+  "prompt_ms": 1424.63,
+  "gen_tokens": 12,
+  "gen_ms": 1363.92,
+  "lang": "en",
+  "sentence": "She could scarcely believe what she had witnessed.",
+  "word": "scarcely",
+  "expected": [
+   "mal",
+   "quase não",
+   "dificilmente"
+  ],
+  "gloss": null,
+  "sentence_pt": "Ela mal conseguia acreditar no que tinha presenciado."
+ },
+ {
+  "out": "É um fato universalmente reconhecido que um homem solteiro, detentor de uma boa fortuna, deve necessariamente estar à procura de uma esposa.",
+  "wall_s": 5.419,
+  "prompt_tokens": 119,
+  "prompt_ms": 1500.476,
+  "gen_tokens": 31,
+  "gen_ms": 3915.662,
+  "lang": "en",
+  "sentence": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+  "word": "want",
+  "expected": [
+   "procura",
+   "necessidade",
+   "falta"
+  ],
+  "gloss": null,
+  "sentence_pt": "É um fato universalmente reconhecido que um homem solteiro, detentor de uma boa fortuna, deve necessariamente estar à procura de uma esposa."
+ },
+ {
+  "out": "Ele ligou a chaleira e esperou pela <b>correio</b>.",
+  "wall_s": 3.399,
+  "prompt_tokens": 104,
+  "prompt_ms": 1395.287,
+  "gen_tokens": 17,
+  "gen_ms": 2000.613,
+  "lang": "en",
+  "sentence": "He put the kettle on and waited for the post.",
+  "word": "post",
+  "expected": [
+   "correio",
+   "correspondência",
+   "carteiro"
+  ],
+  "gloss": "correio",
+  "sentence_pt": "Ele ligou a chaleira e esperou pela correio."
+ },
+ {
+  "out": "Ele finalmente desistiu da luta.",
+  "wall_s": 2.204,
+  "prompt_tokens": 101,
+  "prompt_ms": 1334.977,
+  "gen_tokens": 8,
+  "gen_ms": 864.423,
+  "lang": "en",
+  "sentence": "He gave up the struggle at last.",
+  "word": "gave up",
+  "expected": [
+   "desistiu",
+   "abandonou",
+   "renunciou"
+  ],
+  "gloss": null,
+  "sentence_pt": "Ele finalmente desistiu da luta."
+ },
+ {
+  "out": "Ele <b>fez</b> a prova ontem, mas ainda não sabe o resultado.",
+  "wall_s": 3.484,
+  "prompt_tokens": 109,
+  "prompt_ms": 1405.908,
+  "gen_tokens": 17,
+  "gen_ms": 2063.92,
+  "lang": "fr",
+  "sentence": "Il a passé l'examen hier, mais il ne connaît pas encore le résultat.",
+  "word": "passé",
+  "expected": [
+   "fez",
+   "prestou"
+  ],
+  "gloss": "fez",
+  "sentence_pt": "Ele fez a prova ontem, mas ainda não sabe o resultado."
+ },
+ {
+  "out": "Há muito tempo, eu costumava ir para a cama <b>cedo</b>.",
+  "wall_s": 3.574,
+  "prompt_tokens": 103,
+  "prompt_ms": 1377.016,
+  "gen_tokens": 19,
+  "gen_ms": 2194.24,
+  "lang": "fr",
+  "sentence": "Longtemps, je me suis couché de bonne heure.",
+  "word": "de bonne heure",
+  "expected": [
+   "cedo"
+  ],
+  "gloss": "cedo",
+  "sentence_pt": "Há muito tempo, eu costumava ir para a cama cedo."
+ },
+ {
+  "out": "Durante vários dias consecutivos, <b>fragmentos</b> de exércitos em retirada atravessaram a cidade.",
+  "wall_s": 4.604,
+  "prompt_tokens": 113,
+  "prompt_ms": 1419.379,
+  "gen_tokens": 23,
+  "gen_ms": 3181.487,
+  "lang": "fr",
+  "sentence": "Pendant plusieurs jours de suite des lambeaux d'armée en déroute avaient traversé la ville.",
+  "word": "lambeaux",
+  "expected": [
+   "restos",
+   "farrapos",
+   "fragmentos",
+   "frangalhos"
+  ],
+  "gloss": "fragmentos",
+  "sentence_pt": "Durante vários dias consecutivos, fragmentos de exércitos em retirada atravessaram a cidade."
+ },
+ {
+  "out": "Estávamos na escola, quando o diretor entrou, seguido por um homem vestido de forma elegante.",
+  "wall_s": 6.872,
+  "prompt_tokens": 117,
+  "prompt_ms": 1604.514,
+  "gen_tokens": 21,
+  "gen_ms": 5261.621,
+  "lang": "fr",
+  "sentence": "Nous étions à l'Étude, quand le Proviseur entra, suivi d'un nouveau habillé en bourgeois.",
+  "word": "nouveau",
+  "expected": [
+   "novato",
+   "aluno novo",
+   "recém-chegado"
+  ],
+  "gloss": null,
+  "sentence_pt": "Estávamos na escola, quando o diretor entrou, seguido por um homem vestido de forma elegante."
+ },
+ {
+  "out": "Ele <b>abriu</b> o livro e começou a ler.",
+  "wall_s": 6.094,
+  "prompt_tokens": 103,
+  "prompt_ms": 2945.63,
+  "gen_tokens": 14,
+  "gen_ms": 3085.516,
+  "lang": "de",
+  "sentence": "Sie schlug das Buch auf und fing an zu lesen.",
+  "word": "schlug",
+  "expected": [
+   "abriu"
+  ],
+  "gloss": "abriu",
+  "sentence_pt": "Ele abriu o livro e começou a ler."
+ },
+ {
+  "out": "<b>O banco</b> à beira do rio estava vazio, apenas um cachorro estava ali.",
+  "wall_s": 5.723,
+  "prompt_tokens": 104,
+  "prompt_ms": 3063.75,
+  "gen_tokens": 19,
+  "gen_ms": 2654.475,
+  "lang": "de",
+  "sentence": "Die Bank am Fluss war leer, nur ein Hund lag darunter.",
+  "word": "Bank",
+  "expected": [
+   "banco"
+  ],
+  "gloss": "O banco",
+  "sentence_pt": "O banco à beira do rio estava vazio, apenas um cachorro estava ali."
+ },
+ {
+  "out": "Alguém deve ter <b>difamado</b> Josef K., pois ele foi preso de manhã, mesmo sem ter cometido nenhum ato ilícito.",
+  "wall_s": 5.256,
+  "prompt_tokens": 123,
+  "prompt_ms": 1509.252,
+  "gen_tokens": 31,
+  "gen_ms": 3743.324,
+  "lang": "de",
+  "sentence": "Jemand mußte Josef K. verleumdet haben, denn ohne daß er etwas Böses getan hätte, wurde er eines Morgens verhaftet.",
+  "word": "verleumdet",
+  "expected": [
+   "caluniado",
+   "difamado"
+  ],
+  "gloss": "difamado",
+  "sentence_pt": "Alguém deve ter difamado Josef K., pois ele foi preso de manhã, mesmo sem ter cometido nenhum ato ilícito."
+ },
+ {
+  "out": "Naquela manhã, quando Gregor Samsa acordou de sonhos inquietantes, ele se viu transformado em uma criatura monstruosa, um <b>inseto</b>.",
+  "wall_s": 5.131,
+  "prompt_tokens": 127,
+  "prompt_ms": 1377.01,
+  "gen_tokens": 35,
+  "gen_ms": 3751.346,
+  "lang": "de",
+  "sentence": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
+  "word": "Ungeziefer",
+  "expected": [
+   "inseto",
+   "verme",
+   "bicho",
+   "praga"
+  ],
+  "gloss": "inseto",
+  "sentence_pt": "Naquela manhã, quando Gregor Samsa acordou de sonhos inquietantes, ele se viu transformado em uma criatura monstruosa, um inseto."
+ },
+ {
+  "out": "Essa parte do lago de Como, que se estende em direção ao <b>meio-dia</b>, entre duas cadeias de montanhas contínuas.",
+  "wall_s": 5.452,
+  "prompt_tokens": 119,
+  "prompt_ms": 1380.765,
+  "gen_tokens": 35,
+  "gen_ms": 4029.836,
+  "lang": "it",
+  "sentence": "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti.",
+  "word": "mezzogiorno",
+  "expected": [
+   "sul"
+  ],
+  "gloss": "meio-dia",
+  "sentence_pt": "Essa parte do lago de Como, que se estende em direção ao meio-dia, entre duas cadeias de montanhas contínuas."
+ },
+ {
+  "out": "Eu <b>comi um caranguejo</b>: o trem saía às sete, não às oito.",
+  "wall_s": 4.34,
+  "prompt_tokens": 111,
+  "prompt_ms": 1516.148,
+  "gen_tokens": 24,
+  "gen_ms": 2817.922,
+  "lang": "it",
+  "sentence": "Ho preso un granchio: il treno partiva alle sette, non alle otto.",
+  "word": "preso un granchio",
+  "expected": [
+   "cometi um engano",
+   "me enganei",
+   "errei"
+  ],
+  "gloss": "comi um caranguejo",
+  "sentence_pt": "Eu comi um caranguejo: o trem saía às sete, não às oito."
+ },
+ {
+  "out": "Quando o <b>fim da tarde</b> chegou, parou de chover e saímos para o jardim.",
+  "wall_s": 4.033,
+  "prompt_tokens": 107,
+  "prompt_ms": 1396.824,
+  "gen_tokens": 23,
+  "gen_ms": 2633.158,
+  "lang": "it",
+  "sentence": "Verso sera smise di piovere e uscimmo nel giardino.",
+  "word": "smise",
+  "expected": [
+   "parou"
+  ],
+  "gloss": "fim da tarde",
+  "sentence_pt": "Quando o fim da tarde chegou, parou de chover e saímos para o jardim."
+ },
+ {
+  "out": "Antigamente, a família Malavoglia era tão numerosa quanto as <b>pedras</b> da antiga estrada de Trezza.",
+  "wall_s": 5.183,
+  "prompt_tokens": 112,
+  "prompt_ms": 1332.017,
+  "gen_tokens": 29,
+  "gen_ms": 3848.024,
+  "lang": "it",
+  "sentence": "Un tempo i Malavoglia erano stati numerosi come i sassi della strada vecchia di Trezza.",
+  "word": "sassi",
+  "expected": [
+   "pedras",
+   "seixos"
+  ],
+  "gloss": "pedras",
+  "sentence_pt": "Antigamente, a família Malavoglia era tão numerosa quanto as pedras da antiga estrada de Trezza."
+ },
+ {
+  "out": "Em um <b>lugar</b> da Mancha, cujo nome prefiro esquecer, há algum tempo vivia um senhor.",
+  "wall_s": 4.925,
+  "prompt_tokens": 121,
+  "prompt_ms": 1608.218,
+  "gen_tokens": 27,
+  "gen_ms": 3298.615,
+  "lang": "es",
+  "sentence": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo.",
+  "word": "lugar",
+  "expected": [
+   "povoado",
+   "aldeia",
+   "lugarejo",
+   "lugar"
+  ],
+  "gloss": "lugar",
+  "sentence_pt": "Em um lugar da Mancha, cujo nome prefiro esquecer, há algum tempo vivia um senhor."
+ },
+ {
+  "out": "O jantar estava <b>delicioso</b>, embora a casa dos meus tios seja bem pequena.",
+  "wall_s": 3.988,
+  "prompt_tokens": 111,
+  "prompt_ms": 1464.876,
+  "gen_tokens": 21,
+  "gen_ms": 2519.846,
+  "lang": "es",
+  "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+  "word": "exquisita",
+  "expected": [
+   "deliciosa",
+   "requintada",
+   "excelente"
+  ],
+  "gloss": "delicioso",
+  "sentence_pt": "O jantar estava delicioso, embora a casa dos meus tios seja bem pequena."
+ },
+ {
+  "out": "O jantar estava delicioso, embora a <b>sala</b> dos meus tios seja bem pequena.",
+  "wall_s": 3.658,
+  "prompt_tokens": 111,
+  "prompt_ms": 1408.208,
+  "gen_tokens": 20,
+  "gen_ms": 2242.846,
+  "lang": "es",
+  "sentence": "La cena estaba exquisita, aunque el piso de mis tíos es bastante pequeño.",
+  "word": "piso",
+  "expected": [
+   "apartamento"
+  ],
+  "gloss": "sala",
+  "sentence_pt": "O jantar estava delicioso, embora a sala dos meus tios seja bem pequena."
+ },
+ {
+  "out": "Minha irmã está <b>grávida</b> do seu segundo filho.",
+  "wall_s": 3.085,
+  "prompt_tokens": 103,
+  "prompt_ms": 1273.007,
+  "gen_tokens": 16,
+  "gen_ms": 1809.71,
+  "lang": "es",
+  "sentence": "Mi hermana está embarazada de su segundo hijo.",
+  "word": "embarazada",
+  "expected": [
+   "grávida"
+  ],
+  "gloss": "grávida",
+  "sentence_pt": "Minha irmã está grávida do seu segundo filho."
+ }
+]

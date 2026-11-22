@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="paper">#F4F0E7</color>
+    <color name="forest">#30483C</color>
+    <color name="terracotta">#B77955</color>
+    <color name="midnight">#181E1B</color>
+    <color name="window_background">#F4F0E7</color>
+</resources>
