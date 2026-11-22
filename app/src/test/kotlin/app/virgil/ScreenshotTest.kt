@@ -87,10 +87,10 @@ class ScreenshotTest {
     }
 
     @Test fun biblioteca() = shot("biblioteca") {
-        LibraryScreen(LibraryUiState(loading = false, books = books, totalBooks = books.size), {}, {}, {}, null)
+        LibraryScreen(LibraryUiState(loading = false, books = books, totalBooks = books.size, languages = books.mapNotNull { it.language }.distinct()), onSearch = {}, onOpenBook = {}, onOpenSettings = {})
     }
 
-    @Test fun bibliotecaVazia() = shot("biblioteca-vazia", listOf(false)) { LibraryScreen(LibraryUiState(loading = false), {}, {}, {}, null) }
+    @Test fun bibliotecaVazia() = shot("biblioteca-vazia", listOf(false)) { LibraryScreen(LibraryUiState(loading = false), onSearch = {}, onOpenBook = {}, onOpenSettings = {}) }
 
     @Test fun vocabulario() = shot("vocabulario") { VocabularyScreen(VocabularyUiState(loading = false, entries = words), {}, {}, {}) }
 

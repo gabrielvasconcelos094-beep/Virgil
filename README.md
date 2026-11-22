@@ -16,17 +16,27 @@ Livros em português também podem ser lidos.
 |---|---|---|
 | 0 | Diagnóstico, benchmark de modelos de tradução, decisões de arquitetura | ✅ |
 | 1 | Projeto multi-módulo, identidade visual, tema claro/escuro, tipografia, navegação, Room, DataStore | ✅ |
-| 2 | Importação EPUB/TXT, biblioteca, leitor, seleção de palavras | próxima |
-| 3 | Motor de tradução local (llama.cpp + modelo único) | — |
+| 2 | Importação EPUB/TXT, biblioteca, leitor, seleção de palavras | ✅ |
+| 3 | Motor de tradução local (llama.cpp + modelo único) | próxima |
 | 4 | Análise de dificuldade CEFR | — |
 | 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | — |
 | 6 | Polimento, desempenho, testes de ponta a ponta | — |
 
-O que já funciona de verdade nesta versão: navegação entre Biblioteca, Vocabulário, Revisar e
-Progresso; vocabulário manual (adicionar, editar, filtrar por idioma/estado/data, marcar como
-conhecida, excluir) persistido em Room; níveis por idioma; tema claro/escuro/automático;
-preferências tipográficas com prévia ao vivo, persistidas em DataStore; estatísticas lidas do banco.
-Ainda **não** há importação de livros, leitor nem tradução — essas telas dizem isso em vez de simular.
+O que já funciona de verdade nesta versão:
+
+- **Biblioteca:** importação de EPUB 2/3 e TXT pelo seletor do Android, em segundo plano e com
+  progresso; capas extraídas (ou tipográficas); detecção de duplicatas; recusa clara de EPUB com DRM;
+  busca, ordenação, filtro por idioma; exclusão com limpeza dos arquivos.
+- **Leitor:** renderização nativa com a tipografia escolhida, hifenização no idioma do livro,
+  capítulos, sumário (com âncoras internas), marcadores, retomada automática da posição, progresso,
+  modo imersivo, painel "Aa" (fonte, tamanho, entrelinha, parágrafos, margens, alinhamento, tema).
+- **Seleção:** toque = palavra (com elisões do francês/italiano), pressão longa + arraste =
+  expressão, e expansão para frase ou parágrafo no cartão de consulta; salvar no vocabulário com a
+  frase original, o livro e o capítulo.
+- **Vocabulário, níveis, preferências e estatísticas de tempo de leitura** persistidos localmente.
+
+Ainda **não** há tradução: o cartão de consulta diz que nenhum modelo está instalado, em vez de
+simular um resultado. O motor local é a Fase 3.
 
 ## Documentação
 

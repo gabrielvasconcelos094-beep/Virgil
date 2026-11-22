@@ -32,6 +32,7 @@ data class ShelfRow(
     val level_low: String?,
     val level_high: String?,
     val confidence: Float?,
+    val storage_dir: String,
 )
 
 @Dao
@@ -40,7 +41,7 @@ interface BookDao {
         """
         SELECT b.id, b.title, b.author, b.language, b.format, b.cover_path, b.progress, b.added_at,
                b.last_opened_at, b.finished_at, b.chapter_count, b.total_chars, b.language_variant, b.analysis_state,
-               d.level_low, d.level_high, d.confidence
+               d.level_low, d.level_high, d.confidence, b.storage_dir
         FROM books b LEFT JOIN difficulty_analyses d ON d.book_id = b.id
         ORDER BY COALESCE(b.last_opened_at, b.added_at) DESC
         """,

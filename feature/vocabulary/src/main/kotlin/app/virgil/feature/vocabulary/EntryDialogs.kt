@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import app.virgil.core.designsystem.component.QuietChip
 import app.virgil.core.designsystem.component.SectionLabel
 import app.virgil.core.designsystem.theme.ForeignTermStyle
 import app.virgil.core.designsystem.theme.Spacing
@@ -102,7 +103,11 @@ internal fun EntrySheet(
                 OutlinedTextField(lemma, { lemma = it }, label = { Text("Lema") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(note, { note = it }, label = { Text("Observações") }, modifier = Modifier.fillMaxWidth())
             } else {
-                Text(e.translation, style = MaterialTheme.typography.titleMedium, color = Virgil.colors.primary)
+                Text(
+                    e.translation.ifBlank { "Sem tradução — toque em Editar para acrescentar" },
+                    style = if (e.translation.isBlank()) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleMedium,
+                    color = if (e.translation.isBlank()) Virgil.colors.textSecondary else Virgil.colors.primary,
+                )
             }
 
             e.contextSentence?.let { s ->

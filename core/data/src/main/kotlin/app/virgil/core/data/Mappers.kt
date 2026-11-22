@@ -12,7 +12,8 @@ import app.virgil.core.model.LearningState
 import app.virgil.core.model.SelectionKind
 import app.virgil.core.model.VocabularyEntry
 
-internal fun ShelfRow.toBook(): Book {
+/** [coverRoot] = diretório raiz dos livros; a capa vira caminho absoluto para a interface. */
+fun ShelfRow.toBook(coverRoot: java.io.File? = null): Book {
     val low = CefrLevel.parse(level_low)
     val high = CefrLevel.parse(level_high)
     return Book(
@@ -22,7 +23,7 @@ internal fun ShelfRow.toBook(): Book {
         language = Language.fromTag(language),
         languageVariant = language_variant,
         format = runCatching { BookFormat.valueOf(format) }.getOrDefault(BookFormat.EPUB),
-        coverPath = cover_path,
+        coverPath = cover_path?.let { c -> coverRoot?.let { java.io.File(it, "$storage_dir/$c").absolutePath } },
         chapterCount = chapter_count,
         totalChars = total_chars,
         addedAt = added_at,

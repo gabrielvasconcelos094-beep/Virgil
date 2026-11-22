@@ -47,6 +47,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import app.virgil.core.data.VocabularyFilter
 import app.virgil.core.data.VocabularyRepository
 import app.virgil.core.designsystem.component.EmptyState
+import app.virgil.core.designsystem.component.QuietChip
 import app.virgil.core.designsystem.component.ScreenHeader
 import app.virgil.core.designsystem.component.VirgilDivider
 import app.virgil.core.designsystem.theme.Spacing
@@ -187,20 +188,6 @@ fun VocabularyScreen(
     }
 }
 
-@Composable
-internal fun QuietChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = { Text(label, style = MaterialTheme.typography.labelLarge) },
-        colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = Virgil.colors.primary,
-            selectedLabelColor = Virgil.colors.onPrimary,
-            labelColor = Virgil.colors.textSecondary,
-        ),
-        border = FilterChipDefaults.filterChipBorder(enabled = true, selected = selected, borderColor = Virgil.colors.divider),
-    )
-}
 
 @Composable
 private fun EntryRow(e: VocabularyEntry, onClick: () -> Unit) {
@@ -210,7 +197,12 @@ private fun EntryRow(e: VocabularyEntry, onClick: () -> Unit) {
     ) {
         Column(Modifier.weight(1f)) {
             Text(e.term, style = MaterialTheme.typography.titleMedium.copy(fontFamily = VirgilFonts.Literata), color = Virgil.colors.textPrimary)
-            Text(e.translation, style = MaterialTheme.typography.bodyMedium, color = Virgil.colors.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                e.translation.ifBlank { "sem tradução" },
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (e.translation.isBlank()) Virgil.colors.textSecondary.copy(alpha = 0.6f) else Virgil.colors.textSecondary,
+                maxLines = 1, overflow = TextOverflow.Ellipsis,
+            )
             e.contextSentence?.let {
                 Spacer(Modifier.height(Spacing.xs))
                 Text(

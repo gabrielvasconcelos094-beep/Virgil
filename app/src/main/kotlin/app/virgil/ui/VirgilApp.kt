@@ -31,6 +31,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import app.virgil.feature.reader.ReaderRoute
 import app.virgil.AppContainer
 import app.virgil.core.designsystem.component.VirgilDivider
 import app.virgil.core.designsystem.theme.Virgil
@@ -49,6 +51,7 @@ import kotlin.reflect.KClass
 @Serializable object ProgressDest
 @Serializable object SettingsDest
 @Serializable object LicensesDest
+@Serializable data class ReaderDest(val bookId: Long)
 
 private data class TopLevel(val route: Any, val routeClass: KClass<*>, val label: String, val icon: ImageVector)
 
@@ -115,7 +118,9 @@ fun VirgilApp(container: AppContainer) {
                 SafeArea {
                     LibraryRoute(
                         repo = container.library,
-                        onOpenBook = { /* Leitor: Fase 2 */ },
+                        store = container.bookStore,
+                        imports = container.imports,
+                        onOpenBook = { id -> nav.navigate(ReaderDest(id)) },
                         onOpenSettings = { nav.navigate(SettingsDest) },
                     )
                 }
@@ -132,6 +137,18 @@ fun VirgilApp(container: AppContainer) {
                         onOpenLicenses = { nav.navigate(LicensesDest) },
                     )
                 }
+            }
+            composable<ReaderDest> { entry ->
+                val dest = entry.toRoute<ReaderDest>()
+                ReaderRoute(
+                    bookId = dest.bookId,
+                    store = container.bookStore,
+                    vocabulary = container.vocabulary,
+                    preferences = container.preferences,
+                    imageRoot = { rel -> java.io.File(container.booksRoot, rel).absolutePath },
+                    onBack = { nav.popBackStack() },
+                    onOpenTranslationSettings = { nav.navigate(SettingsDest) },
+                )
             }
             composable<LicensesDest> { SafeArea(includeBottom = true) { LicensesScreen(onBack = { nav.popBackStack() }) } }
         }

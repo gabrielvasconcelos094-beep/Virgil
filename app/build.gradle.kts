@@ -37,7 +37,9 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:datastore"))
     implementation(project(":core:data"))
+    implementation(project(":engine:books"))
     implementation(project(":feature:library"))
+    implementation(project(":feature:reader"))
     implementation(project(":feature:vocabulary"))
     implementation(project(":feature:review"))
     implementation(project(":feature:progress"))
@@ -54,6 +56,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
+    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)

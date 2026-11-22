@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
-class LibraryRepository(private val db: VirgilDatabase) {
-    fun shelf(): Flow<List<Book>> = db.books().observeShelf().map { rows -> rows.map { it.toBook() } }
+class LibraryRepository(private val db: VirgilDatabase, private val booksRoot: java.io.File) {
+    fun shelf(): Flow<List<Book>> = db.books().observeShelf().map { rows -> rows.map { it.toBook(booksRoot) } }
 }
 
 data class VocabularyFilter(
@@ -48,6 +48,28 @@ class VocabularyRepository(private val db: VirgilDatabase, private val clock: ()
                 kind = kind.name, translation = translation.trim(), contextSentence = null, contextTranslation = null,
                 bookId = null, chapterIndex = null, charOffset = null, createdAt = now, updatedAt = now,
                 note = note?.takeIf { it.isNotBlank() }, manual = true,
+            ),
+        )
+    }
+
+    /** Registra uma consulta feita no leitor (cria a entrada ou incrementa o contador). */
+    suspend fun saveLookup(
+        term: String,
+        language: Language,
+        kind: SelectionKind,
+        translation: String?,
+        sentence: String?,
+        sentenceTranslation: String?,
+        bookId: Long?,
+        chapterIndex: Int?,
+        charOffset: Int?,
+    ): Long {
+        val now = clock()
+        return db.vocabulary().recordLookup(
+            VocabularyEntity(
+                term = term.trim(), termKey = termKey(term), lemma = null, language = language.tag, kind = kind.name,
+                translation = translation?.trim().orEmpty(), contextSentence = sentence?.trim(), contextTranslation = sentenceTranslation,
+                bookId = bookId, chapterIndex = chapterIndex, charOffset = charOffset, createdAt = now, updatedAt = now, note = null,
             ),
         )
     }

@@ -1,0 +1,150 @@
+package app.virgil
+
+import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import app.virgil.core.data.PreferencesRepository
+import app.virgil.core.data.VocabularyRepository
+import app.virgil.core.database.VirgilDatabase
+import app.virgil.core.datastore.PreferencesStore
+import app.virgil.core.designsystem.theme.VirgilTheme
+import app.virgil.core.model.BookFormat
+import app.virgil.core.model.ThemeMode
+import app.virgil.engine.books.BookFiles
+import app.virgil.engine.books.BookStore
+import app.virgil.engine.books.importer.BookImporter
+import app.virgil.engine.books.importer.ImportOutcome
+import app.virgil.engine.books.importer.StagedFile
+import app.virgil.feature.reader.ReaderRoute
+import com.github.takahirom.roborazzi.captureRoboImage
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import java.io.File
+import java.util.zip.CRC32
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
+/**
+ * Leitor de ponta a ponta: importa um EPUB real, abre o leitor, toca numa palavra e confere o
+ * cartão de consulta; também salva no vocabulário. Gera capturas em app/build/outputs/roborazzi.
+ */
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [36], qualifiers = "w411dp-h891dp-xxhdpi")
+class ReaderTest {
+    @get:Rule val compose = createComposeRule()
+    @get:Rule val tmp = TemporaryFolder()
+
+    private lateinit var db: VirgilDatabase
+    private lateinit var files: BookFiles
+    private var bookId = 0L
+
+    private val chapter1 = listOf(
+        "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        "However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered the rightful property of some one or other of their daughters.",
+        "“My dear Mr. Bennet,” said his lady to him one day, “have you heard that Netherfield Park is let at last?”",
+        "Mr. Bennet replied that he had not.",
+        "“But it is,” returned she; “for Mrs. Long has just been here, and she told me all about it.”",
+        "Mr. Bennet made no answer.",
+        "“Do you not want to know who has taken it?” cried his wife impatiently.",
+        "“<i>You</i> want to tell me, and I have no objection to hearing it.”",
+        "This was invitation enough.",
+    )
+
+    @Before fun setUp() = runBlocking {
+        val ctx = ApplicationProvider.getApplicationContext<Context>()
+        db = Room.inMemoryDatabaseBuilder(ctx, VirgilDatabase::class.java).allowMainThreadQueries().build()
+        files = BookFiles(tmp.newFolder("books"))
+        val epub = tmp.newFile("pp.epub")
+        writeEpub(epub)
+        val r = BookImporter(db, files, tmp.newFolder("stage")).import(StagedFile(epub, "pp.epub", "h", BookFormat.EPUB))
+        bookId = (r as ImportOutcome.Imported).bookId
+    }
+
+    @After fun tearDown() = db.close()
+
+    @Test fun leitorAbreTocaPalavraESalva() {
+        val vocab = VocabularyRepository(db)
+        var dark by mutableStateOf(false)
+        compose.setContent {
+            VirgilTheme(if (dark) ThemeMode.Dark else ThemeMode.Light) {
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+                    ReaderRoute(
+                        bookId = bookId, store = BookStore(db, files), vocabulary = vocab,
+                        preferences = PreferencesRepository(PreferencesStore(ApplicationProvider.getApplicationContext())),
+                        imageRoot = { File(files.root, it).absolutePath }, onBack = {}, onOpenTranslationSettings = {},
+                    )
+                }
+            }
+        }
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("Mr. Bennet replied that he had not.").fetchSemanticsNodes().isNotEmpty() }
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/leitor-claro.png")
+        dark = true
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/leitor-escuro.png")
+        dark = false
+
+        // Toque sobre "Bennet" na frase curta: o deslocamento real do texto decide a palavra.
+        compose.onNodeWithText("Mr. Bennet replied that he had not.").performTouchInput {
+            click(androidx.compose.ui.geometry.Offset(width * 0.18f, height / 2f))
+        }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Salvar no vocabulário").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Tradução local ainda não disponível: nenhum modelo de tradução instalado.").assertIsDisplayed()
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/leitor-consulta.png")
+
+        compose.onNodeWithText("Salvar no vocabulário").performTouchInput { click() }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("No vocabulário").fetchSemanticsNodes().isNotEmpty() }
+        val saved = runBlocking { db.vocabulary().observe(null, null, null, null, null).first() }
+        assertThat(saved).hasSize(1)
+        assertThat(saved[0].term).isEqualTo("Bennet")
+        assertThat(saved[0].context_sentence).isEqualTo("Mr. Bennet replied that he had not.")
+        assertThat(saved[0].book_id).isEqualTo(bookId)
+
+        // Frase: expande a seleção a partir da palavra.
+        compose.onNodeWithText("Frase").performTouchInput { click() }
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/leitor-frase.png")
+    }
+
+    private fun writeEpub(file: File) {
+        val body = chapter1.joinToString("") { "<p>$it</p>" }
+        val entries = linkedMapOf(
+            "META-INF/container.xml" to """<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>""",
+            "OEBPS/content.opf" to """<?xml version="1.0"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>Pride and Prejudice</dc:title><dc:creator>Jane Austen</dc:creator><dc:language>en</dc:language></metadata><manifest><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/><item id="c1" href="c1.xhtml" media-type="application/xhtml+xml"/><item id="c2" href="c2.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="c1"/><itemref idref="c2"/></spine></package>""",
+            "OEBPS/nav.xhtml" to """<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol><li><a href="c1.xhtml">Chapter I</a></li><li><a href="c2.xhtml">Chapter II</a></li></ol></nav></body></html>""",
+            "OEBPS/c1.xhtml" to """<html xmlns="http://www.w3.org/1999/xhtml"><body><h2>Chapter I</h2>$body</body></html>""",
+            "OEBPS/c2.xhtml" to """<html xmlns="http://www.w3.org/1999/xhtml"><body><h2>Chapter II</h2><p>Mr. Bennet was among the earliest of those who waited on Mr. Bingley.</p></body></html>""",
+        )
+        ZipOutputStream(file.outputStream()).use { zip ->
+            val mime = "application/epub+zip".toByteArray()
+            zip.putNextEntry(ZipEntry("mimetype").apply { method = ZipEntry.STORED; size = mime.size.toLong(); compressedSize = size; crc = CRC32().apply { update(mime) }.value })
+            zip.write(mime); zip.closeEntry()
+            entries.forEach { (n, c) -> zip.putNextEntry(ZipEntry(n)); zip.write(c.toByteArray()); zip.closeEntry() }
+        }
+    }
+}

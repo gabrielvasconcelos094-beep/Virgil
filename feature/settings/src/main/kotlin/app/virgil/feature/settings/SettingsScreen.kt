@@ -44,7 +44,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.virgil.core.data.LanguageProfile
 import app.virgil.core.data.PreferencesRepository
 import app.virgil.core.data.ProfileRepository
+import app.virgil.core.designsystem.component.ChipRow
+import app.virgil.core.designsystem.component.QuietChip
+import app.virgil.core.designsystem.component.ReadingControls
 import app.virgil.core.designsystem.component.SectionLabel
+import app.virgil.core.designsystem.component.SwitchRow
 import app.virgil.core.designsystem.component.VirgilDivider
 import app.virgil.core.designsystem.theme.Spacing
 import app.virgil.core.designsystem.theme.Virgil
@@ -98,7 +102,7 @@ fun SettingsScreen(
         SectionLabel("Aparência")
         ChipRow {
             listOf(ThemeMode.System to "Automático", ThemeMode.Light to "Claro", ThemeMode.Dark to "Escuro").forEach { (m, label) ->
-                Chip(label, prefs.theme == m) { onTheme(m) }
+                QuietChip(label, prefs.theme == m) { onTheme(m) }
             }
         }
 
@@ -106,19 +110,7 @@ fun SettingsScreen(
         SectionLabel("Leitura")
         ReadingPreview(prefs.reading)
         Spacer(Modifier.height(Spacing.md))
-        ChipRow {
-            ReadingFont.entries.forEach { f -> Chip(f.labelPt, prefs.reading.font == f) { onReading(prefs.reading.copy(font = f)) } }
-        }
-        val r = prefs.reading
-        LabeledSlider("Tamanho da letra", "${r.fontSizeSp.toInt()} pt", r.fontSizeSp, 14f..30f, 15) { onReading(r.copy(fontSizeSp = it)) }
-        LabeledSlider("Entrelinha", "%.2f".format(r.lineHeight), r.lineHeight, 1.2f..2.0f, 15) { onReading(r.copy(lineHeight = it)) }
-        LabeledSlider("Espaço entre parágrafos", "%.1f".format(r.paragraphSpacingEm), r.paragraphSpacingEm, 0f..1.6f, 15) { onReading(r.copy(paragraphSpacingEm = it)) }
-        LabeledSlider("Margens", "${r.horizontalMarginDp} dp", r.horizontalMarginDp.toFloat(), 12f..48f, 8) { onReading(r.copy(horizontalMarginDp = it.toInt())) }
-        ChipRow {
-            Chip("Alinhado à esquerda", r.align == TextAlign.Start) { onReading(r.copy(align = TextAlign.Start)) }
-            Chip("Justificado", r.align == TextAlign.Justify) { onReading(r.copy(align = TextAlign.Justify)) }
-        }
-        SwitchRow("Hifenização", "Quebra palavras longas no fim da linha", r.hyphenate) { onReading(r.copy(hyphenate = it)) }
+        ReadingControls(prefs.reading, onReading)
 
         Divider()
         SectionLabel("Seus níveis")
@@ -131,8 +123,8 @@ fun SettingsScreen(
             Column(Modifier.padding(top = Spacing.md)) {
                 Text(prof.language.displayNamePt, style = MaterialTheme.typography.titleSmall, color = Virgil.colors.textPrimary, modifier = Modifier.padding(horizontal = Spacing.screen))
                 ChipRow {
-                    Chip("—", prof.level == null) { onLevel(prof.language, null) }
-                    CefrLevel.entries.forEach { lvl -> Chip(lvl.label, prof.level == lvl) { onLevel(prof.language, lvl) } }
+                    QuietChip("—", prof.level == null) { onLevel(prof.language, null) }
+                    CefrLevel.entries.forEach { lvl -> QuietChip(lvl.label, prof.level == lvl) { onLevel(prof.language, lvl) } }
                 }
             }
         }
@@ -182,55 +174,6 @@ private fun ReadingPreview(r: ReadingPreferences) {
         Text("Mrs Dalloway said she would buy the flowers herself.", style = style)
         Spacer(Modifier.height((r.fontSizeSp * r.paragraphSpacingEm).dp))
         Text("For Lucy had her work cut out for her. The doors would be taken off their hinges.", style = style)
-    }
-}
-
-@Composable
-private fun ChipRow(content: @Composable () -> Unit) {
-    Row(
-        Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = Spacing.screen, vertical = Spacing.xs),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-    ) { content() }
-}
-
-@Composable
-private fun Chip(label: String, selected: Boolean, onClick: () -> Unit) {
-    FilterChip(
-        selected = selected, onClick = onClick,
-        label = { Text(label, style = MaterialTheme.typography.labelLarge) },
-        colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = Virgil.colors.primary, selectedLabelColor = Virgil.colors.onPrimary, labelColor = Virgil.colors.textSecondary,
-        ),
-        border = FilterChipDefaults.filterChipBorder(enabled = true, selected = selected, borderColor = Virgil.colors.divider),
-    )
-}
-
-@Composable
-private fun LabeledSlider(label: String, value: String, current: Float, range: ClosedFloatingPointRange<Float>, steps: Int, onChange: (Float) -> Unit) {
-    // Estado local durante o arraste; persiste só ao soltar (evita uma escrita no DataStore por quadro).
-    var local by remember(current) { mutableStateOf(current) }
-    Column(Modifier.padding(horizontal = Spacing.screen, vertical = Spacing.xs)) {
-        Row {
-            Text(label, style = MaterialTheme.typography.bodyMedium, color = Virgil.colors.textPrimary, modifier = Modifier.weight(1f))
-            Text(if (local == current) value else "…", style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary)
-        }
-        Slider(
-            value = local, onValueChange = { local = it }, onValueChangeFinished = { onChange(local) },
-            valueRange = range, steps = steps,
-            colors = SliderDefaults.colors(thumbColor = Virgil.colors.primary, activeTrackColor = Virgil.colors.primary, inactiveTrackColor = Virgil.colors.divider, activeTickColor = Virgil.colors.primary.copy(alpha = 0f), inactiveTickColor = Virgil.colors.divider.copy(alpha = 0f)),
-        )
-    }
-}
-
-@Composable
-private fun SwitchRow(title: String, subtitle: String, checked: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = Spacing.screen, vertical = Spacing.sm), verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge, color = Virgil.colors.textPrimary)
-            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary)
-        }
-        Spacer(Modifier.width(Spacing.md))
-        Switch(checked, onChange, colors = SwitchDefaults.colors(checkedTrackColor = Virgil.colors.primary, checkedThumbColor = Virgil.colors.onPrimary))
     }
 }
 

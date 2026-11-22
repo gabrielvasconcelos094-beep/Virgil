@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "app.virgil.feature.library"
 }
+
+dependencies {
+    implementation(project(":engine:books"))
+}

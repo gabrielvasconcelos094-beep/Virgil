@@ -32,6 +32,7 @@ include(":engine:books")
 
 // Funcionalidades (uma por área de navegação)
 include(":feature:library")
+include(":feature:reader")
 include(":feature:vocabulary")
 include(":feature:review")
 include(":feature:progress")
