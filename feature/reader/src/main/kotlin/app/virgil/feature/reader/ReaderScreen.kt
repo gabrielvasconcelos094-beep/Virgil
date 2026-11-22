@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -172,6 +173,20 @@ private fun ReaderScreen(
             if (size > 0) listState.scrollToItem(t.blockIndex + 1, (size * t.fraction).toInt())
         }
         vm.scrollConsumed()
+    }
+    // Mantém a passagem selecionada visível acima do cartão de consulta.
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    LaunchedEffect(state.lookup?.selection?.blockIndex) {
+        val sel = state.lookup?.selection ?: return@LaunchedEffect
+        val info = listState.layoutInfo
+        val item = info.visibleItemsInfo.firstOrNull { it.index == sel.blockIndex + 1 } ?: return@LaunchedEffect
+        val cardTop = info.viewportEndOffset - with(density) { 300.dp.roundToPx() }
+        val itemBottom = item.offset + item.size
+        if (itemBottom > cardTop) {
+            // Rola o suficiente para o fim do parágrafo ficar acima do cartão, sem tirar seu início da tela.
+            val delta = minOf(itemBottom - cardTop, item.offset - info.viewportStartOffset - with(density) { 72.dp.roundToPx() }).coerceAtLeast(0)
+            if (delta > 0) listState.animateScrollBy(delta.toFloat())
+        }
     }
     // Informa a posição visível (o view model salva com debounce).
     LaunchedEffect(listState, state.doc) {

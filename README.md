@@ -20,7 +20,7 @@ Livros em português também podem ser lidos.
 | 3 | Motor de tradução local (llama.cpp + modelo único) | ✅ (falta medir no aparelho) |
 | 4 | Análise de dificuldade CEFR | ✅ (calibração pendente) |
 | 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | ✅ |
-| 6 | Polimento, desempenho, testes de ponta a ponta | em andamento |
+| 6 | Polimento, verificação, testes de ponta a ponta, APK | ✅ (medições no aparelho pendentes) |
 
 O que já funciona de verdade nesta versão:
 
@@ -52,7 +52,49 @@ O que já funciona de verdade nesta versão:
   em contexto, frase e parágrafo com texto aparecendo aos poucos; cache local; a última consulta
   cancela a anterior; o modelo é descarregado após inatividade ou sob pressão de memória.
 
+## Instalação
+
+1. Baixe o APK (`app/build/outputs/apk/release/app-release.apk` após compilar, ou o arquivo
+   entregue junto com esta versão) para o celular Android (9 ou superior, ARM64).
+2. Abra o arquivo e permita "instalar apps desta fonte" quando o Android pedir.
+3. Abra o Virgil. Em **Configurações → Tradução**, baixe o modelo recomendado para o seu aparelho
+   (TranslateGemma 4B, 2,49 GB, para 6 GB de RAM ou mais; Hy-MT2 1.8B, 1,13 GB, para 4 GB). Por
+   padrão o download só acontece em Wi-Fi, pode ser interrompido e retomado, e é verificado por
+   SHA-256. Sem internet no aparelho, copie o arquivo `.gguf` para ele e use
+   **Instalar a partir de arquivo**.
+
+> O APK desta versão é assinado com a chave de depuração. Para distribuir, gere uma keystore
+> própria e configure `signingConfigs` em `app/build.gradle.kts`.
+
+## Como usar
+
+- **Importar:** Biblioteca → **+** → escolha um EPUB ou TXT. O livro aparece com capa (ou capa
+  tipográfica) e, em segundo plano, recebe a estimativa de dificuldade.
+- **Ler:** toque na capa. Toque no centro da página para mostrar/ocultar os controles (sumário,
+  marcadores, capítulos, **Aa** para fonte, tamanho, entrelinha, margens, alinhamento e tema).
+- **Consultar:** toque numa palavra para a tradução em contexto; pressione e arraste para selecionar
+  uma expressão; no cartão, escolha **Frase** ou **Parágrafo** para traduções maiores. As palavras
+  consultadas vão para o vocabulário automaticamente (desative em Configurações).
+- **Dificuldade:** pressione a capa e escolha **Sobre o livro e dificuldade** (ou o ícone ⓘ no
+  leitor). Informe seu nível em cada idioma em Configurações → Seus níveis para ver a comparação.
+- **Revisar:** a aba Revisar mostra as palavras do dia; tente lembrar, revele e avalie
+  (Esqueci/Difícil/Bom/Fácil).
+- **Widget:** na tela inicial do Android, toque e segure → Widgets → Virgil.
+
+## Pendências conhecidas
+
+Detalhes e justificativas em [docs/entrega.md](docs/entrega.md).
+
+- Medições no celular (latência, memória, bateria, partida a frio do modelo) — não há aparelho
+  neste ambiente de desenvolvimento.
+- Calibração da estimativa CEFR com textos de nível conhecido (hoje: "estimativa preliminar").
+- Modo paginado (o leitor usa rolagem por capítulo); notas de rodapé não abrem em pop-up.
+- Tradução da frase de contexto ao salvar uma palavra (a ficha guarda a frase original).
+- Exportação/backup manual do vocabulário; keystore de release.
+
 ## Documentação
+
+- [Relatório de entrega](docs/entrega.md) — o que foi feito, verificado e o que falta
 
 - [Arquitetura e análise técnica](docs/arquitetura.md) — princípios, fluxo de consulta, política de memória, riscos
 - [Benchmark de tradução (nov/2026)](docs/benchmark/2026-11-traducao.md) — medições reais de 3 modelos

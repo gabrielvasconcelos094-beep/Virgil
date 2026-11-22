@@ -190,6 +190,39 @@ class ReaderTest {
         assertThat(saved.single().translation).isEqualTo("respondeu")
     }
 
+    /** Avança o looper principal do Robolectric até a condição valer (view models fora de composição). */
+    private fun awaitMain(condition: () -> Boolean) {
+        val deadline = System.currentTimeMillis() + 10_000
+        while (!condition()) {
+            org.robolectric.shadows.ShadowLooper.idleMainLooper()
+            check(System.currentTimeMillis() < deadline) { "condição não satisfeita a tempo" }
+            Thread.sleep(10)
+        }
+    }
+
+    @Test fun retomaNaPosicaoSalva() {
+        val ctx = ApplicationProvider.getApplicationContext<Context>()
+        val store = BookStore(db, files)
+        val prefs = PreferencesRepository(PreferencesStore(ctx))
+        // Sessão 1: vai para o capítulo II e "fecha" o app.
+        val first = app.virgil.feature.reader.ReaderViewModel(bookId, store, VocabularyRepository(db), prefs, null)
+        awaitMain { first.state.value.doc != null }
+        first.goToChapter(1)
+        awaitMain { first.state.value.chapterIndex == 1 && first.state.value.doc?.blocks?.firstOrNull()?.text == "Chapter II" }
+        first.onVisible(1, 0.5f)
+        first.onStopReading()
+        awaitMain { runBlocking { db.books().position(bookId)?.chapterIndex } == 1 }
+        val saved = runBlocking { db.books().position(bookId)!! }
+        assertThat(saved.charOffset).isGreaterThan(0)
+        val progress = runBlocking { db.books().get(bookId)!!.progress }
+        assertThat(progress).isGreaterThan(0.5f)
+        // Sessão 2: um novo leitor abre direto no mesmo capítulo e bloco.
+        val second = app.virgil.feature.reader.ReaderViewModel(bookId, store, VocabularyRepository(db), prefs, null)
+        awaitMain { second.state.value.doc != null }
+        assertThat(second.state.value.chapterIndex).isEqualTo(1)
+        assertThat(second.state.value.scrollTarget?.blockIndex).isEqualTo(1)
+    }
+
     @Test fun analiseDoLivroETelaDeDificuldade() {
         runBlocking {
             app.virgil.engine.analysis.AnalysisWorker.analyze(db, files, bookId)

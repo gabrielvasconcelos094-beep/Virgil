@@ -76,13 +76,28 @@ fun TranslationModelRoute(store: ModelStore, translator: Translator, onBack: () 
         }
     }
 
+    var pendingSpec by remember { mutableStateOf<ModelSpec?>(null) }
+    // Android 13+: a notificação de progresso do download precisa de permissão. Sem ela o download
+    // continua normalmente; só a notificação fica oculta.
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        pendingSpec?.let { ModelDownloadWorker.start(context, it, allowMetered) }
+        pendingSpec = null
+    }
+
     fun startDownload(spec: ModelSpec) {
         val free = store.freeBytes()
         if (free < spec.sizeBytes + 200L * 1024 * 1024) {
             message = "Espaço insuficiente: ${spec.displayName} precisa de ${gb(spec.sizeBytes)} e há ${gb(free)} livres."
             return
         }
-        ModelDownloadWorker.start(context, spec, allowMetered)
+        val needsPermission = android.os.Build.VERSION.SDK_INT >= 33 &&
+            androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        if (needsPermission) {
+            pendingSpec = spec
+            notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            ModelDownloadWorker.start(context, spec, allowMetered)
+        }
     }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = Spacing.xxl)) {

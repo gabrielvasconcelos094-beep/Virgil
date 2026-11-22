@@ -74,9 +74,9 @@ limite de tokens proporcional à entrada.
 | Fase | Conteúdo | Estado |
 |---|---|---|
 | 0 | Diagnóstico, benchmark de modelos, ADRs | concluída |
-| 1 | Estrutura, tema, tipografia, navegação, Room, DataStore | concluída (ver README) |
-| 2 | Importação EPUB/TXT, biblioteca, leitor, posição, seleção | próxima |
-| 3 | llama.cpp via JNI, gerenciamento do modelo, tradução, cache, medições no aparelho | — |
-| 4 | Idioma/variante, análise CEFR por capítulo, perfil do leitor | — |
-| 5 | Vocabulário a partir do leitor, FSRS, widget, estatísticas | — |
-| 6 | Polimento, desempenho, testes de ponta a ponta, APK de release | — |
+| 1 | Estrutura, tema, tipografia, navegação, Room, DataStore | concluída |
+| 2 | Importação EPUB/TXT, biblioteca, leitor, posição, seleção | concluída |
+| 3 | llama.cpp via JNI, gerenciamento do modelo, tradução, cache | concluída (medições no aparelho pendentes) |
+| 4 | Idioma/variante, análise CEFR por capítulo, perfil do leitor | concluída (calibração pendente) |
+| 5 | Vocabulário a partir do leitor, FSRS, widget, estatísticas | concluída |
+| 6 | Polimento, verificação, testes de ponta a ponta, APK de release | concluída |
