@@ -13,3 +13,4 @@ captures/
 *.gguf
 /tools/mt-benchmark/results/raw/
 __pycache__/
+/dist/
