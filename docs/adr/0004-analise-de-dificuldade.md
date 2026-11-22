@@ -52,3 +52,18 @@ confiança baixa.
   ("frases longas", "vocabulário raro") e totalmente offline.
 - Precisão limitada por natureza; a faixa e a confiança comunicam essa limitação.
 - Um idioma novo exige: lista de frequência, listas de conectivos, regras morfológicas e idiomatismos.
+
+## Implementação (versão 1 do analisador)
+
+- `engine/analysis`: `DifficultyAnalyzer` (métricas, pontuação, faixa, observações), `VariantDetector`,
+  `AnalysisWorker` (capítulo a capítulo; reanalisa livros quando `DifficultyAnalyzer.VERSION` muda),
+  `BookInsights` (dados da tela de análise).
+- Listas de frequência: 50 mil formas por idioma, extraídas do wordfreq 3.1.1 (CC BY-SA 4.0,
+  `docs/licenses/wordfreq-NOTICE.md`), ~1,2 MB no total.
+- Âncoras (A1…C2): cobertura de 95% em 1 000 / 2 000 / 4 000 / 8 000 / 16 000 / 32 000 formas;
+  frase média 7 / 10 / 13 / 17 / 22 / 30 palavras; pesos 0,5 vocabulário, 0,2 sintaxe, 0,15 formas
+  verbais, 0,15 estilo.
+- Sanidade verificada em testes: textos simples escritos para o teste ficam em A2–B1; trechos de
+  Woolf/Austen/Conrad, Flaubert/Proust e Kafka ficam entre B2 e C2.
+- **Pendente:** calibração com textos de nível conhecido por idioma. Até lá, a confiança informada é
+  limitada a 0,6 e a interface mostra "estimativa preliminar".

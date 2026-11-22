@@ -18,8 +18,8 @@ Livros em português também podem ser lidos.
 | 1 | Projeto multi-módulo, identidade visual, tema claro/escuro, tipografia, navegação, Room, DataStore | ✅ |
 | 2 | Importação EPUB/TXT, biblioteca, leitor, seleção de palavras | ✅ |
 | 3 | Motor de tradução local (llama.cpp + modelo único) | ✅ (falta medir no aparelho) |
-| 4 | Análise de dificuldade CEFR | próxima |
-| 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | — |
+| 4 | Análise de dificuldade CEFR | ✅ (calibração pendente) |
+| 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | próxima |
 | 6 | Polimento, desempenho, testes de ponta a ponta | — |
 
 O que já funciona de verdade nesta versão:
@@ -33,6 +33,10 @@ O que já funciona de verdade nesta versão:
 - **Seleção:** toque = palavra (com elisões do francês/italiano), pressão longa + arraste =
   expressão, e expansão para frase ou parágrafo no cartão de consulta; salvar no vocabulário com a
   frase original, o livro e o capítulo.
+- **Dificuldade estimada (CEFR):** análise determinística em segundo plano após a importação
+  (vocabulário por cobertura de frequência, sintaxe, formas verbais literárias por idioma, estilo,
+  variante linguística), faixa por livro e por capítulo, observações em português, comparação com o
+  nível declarado pelo leitor. Apresentada como estimativa preliminar até a calibração.
 - **Vocabulário, níveis, preferências e estatísticas de tempo de leitura** persistidos localmente.
 
 - **Tradução local:** um único modelo (TranslateGemma 4B, ou Hy-MT2 1.8B em aparelhos com 4 GB),

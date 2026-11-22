@@ -66,6 +66,15 @@ interface BookDao {
     @Query("UPDATE books SET progress = :progress, finished_at = CASE WHEN :progress >= 0.995 AND finished_at IS NULL THEN :at ELSE finished_at END WHERE id = :id")
     suspend fun updateProgress(id: Long, progress: Float, at: Long)
 
+    /** Livros à espera de análise de dificuldade (ou analisados por uma versão antiga do analisador). */
+    @Query(
+        """
+        SELECT id FROM books WHERE analysis_state = 'Pending'
+           OR (analysis_state = 'Done' AND id NOT IN (SELECT book_id FROM difficulty_analyses WHERE analyzer_version >= :version))
+        """,
+    )
+    fun observeNeedingAnalysis(version: Int): Flow<List<Long>>
+
     @Query("UPDATE books SET analysis_state = :state WHERE id = :id")
     suspend fun setAnalysisState(id: Long, state: String)
 

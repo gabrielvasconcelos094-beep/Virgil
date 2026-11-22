@@ -150,6 +150,7 @@ fun LibraryRoute(
     imports: ImportController,
     onOpenBook: (Long) -> Unit,
     onOpenSettings: () -> Unit,
+    onBookDetails: (Long) -> Unit = {},
 ) {
     val vm: LibraryViewModel = viewModel(factory = viewModelFactory { initializer { LibraryViewModel(repo, store, imports) } })
     val state by vm.state.collectAsStateWithLifecycle()
@@ -164,6 +165,7 @@ fun LibraryRoute(
         onOpenSettings = onOpenSettings,
         onImport = { picker.launch(ImportMimeTypes) },
         onDelete = { confirmDelete = it },
+        onDetails = { onBookDetails(it.id) },
         onDismissImport = vm::dismiss,
         onDismissMessage = vm::dismissMessage,
     )
@@ -188,6 +190,7 @@ fun LibraryScreen(
     onOpenSettings: () -> Unit,
     onImport: () -> Unit = {},
     onDelete: (Book) -> Unit = {},
+    onDetails: (Book) -> Unit = {},
     onDismissImport: (UUID) -> Unit = {},
     onDismissMessage: () -> Unit = {},
 ) {
@@ -246,7 +249,7 @@ fun LibraryScreen(
                 )
             }
         }
-        items(state.books, key = { it.id }) { book -> BookTile(book, onClick = { onOpenBook(book.id) }, onDelete = { onDelete(book) }) }
+        items(state.books, key = { it.id }) { book -> BookTile(book, onClick = { onOpenBook(book.id) }, onDetails = { onDetails(book) }, onDelete = { onDelete(book) }) }
     }
 }
 
@@ -276,7 +279,7 @@ private fun Notice(text: String, isError: Boolean = false, onDismiss: () -> Unit
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BookTile(book: Book, onClick: () -> Unit, onDelete: () -> Unit) {
+private fun BookTile(book: Book, onClick: () -> Unit, onDetails: () -> Unit, onDelete: () -> Unit) {
     var menu by remember { mutableStateOf(false) }
     Column(Modifier.combinedClickable(onClick = onClick, onLongClick = { menu = true }, onLongClickLabel = "Opções do livro")) {
         Box {
@@ -290,6 +293,7 @@ private fun BookTile(book: Book, onClick: () -> Unit, onDelete: () -> Unit) {
             } else placeholder()
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(text = { Text("Abrir") }, onClick = { menu = false; onClick() })
+                DropdownMenuItem(text = { Text("Sobre o livro e dificuldade") }, onClick = { menu = false; onDetails() })
                 DropdownMenuItem(text = { Text("Excluir", color = Virgil.colors.error) }, onClick = { menu = false; onDelete() })
             }
         }

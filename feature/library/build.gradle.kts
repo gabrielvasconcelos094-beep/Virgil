@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(project(":engine:books"))
+    implementation(project(":engine:analysis"))
 }

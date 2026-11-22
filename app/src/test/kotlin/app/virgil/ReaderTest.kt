@@ -82,6 +82,13 @@ class ReaderTest {
         "“Do you not want to know who has taken it?” cried his wife impatiently.",
         "“<i>You</i> want to tell me, and I have no objection to hearing it.”",
         "This was invitation enough.",
+        "“Why, my dear, you must know, Mrs. Long says that Netherfield is taken by a young man of large fortune from the north of England; that he came down on Monday in a chaise and four to see the place, and was so much delighted with it, that he agreed with Mr. Morris immediately; that he is to take possession before Michaelmas, and some of his servants are to be in the house by the end of next week.”",
+        "“What is his name?”",
+        "“Bingley.”",
+        "“Is he married or single?”",
+        "“Oh! Single, my dear, to be sure! A single man of large fortune; four or five thousand a year. What a fine thing for our girls!”",
+        "“How so? How can it affect them?”",
+        "“My dear Mr. Bennet,” replied his wife, “how can you be so tiresome! You must know that I am thinking of his marrying one of them.”",
     )
 
     @Before fun setUp() = runBlocking {
@@ -181,6 +188,28 @@ class ReaderTest {
         assertThat(req.language).isEqualTo(Language.EN_GB)
         val saved = runBlocking { db.vocabulary().observe(null, null, null, null, null).first() }
         assertThat(saved.single().translation).isEqualTo("respondeu")
+    }
+
+    @Test fun analiseDoLivroETelaDeDificuldade() {
+        runBlocking {
+            app.virgil.engine.analysis.AnalysisWorker.analyze(db, files, bookId)
+            db.profiles().upsert(app.virgil.core.database.entity.LanguageProfileEntity("en-GB", "B1", 0))
+        }
+        val book = runBlocking { db.books().get(bookId)!! }
+        assertThat(book.analysisState).isEqualTo("Done")
+        val analysis = runBlocking { db.analysis().observe(bookId).first() }
+        assertThat(analysis).isNotNull()
+        println("Análise: ${analysis!!.levelLow}–${analysis.levelHigh} (confiança ${analysis.confidence})")
+        compose.setContent {
+            VirgilTheme(ThemeMode.Light) {
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+                    app.virgil.feature.library.BookDetailsRoute(bookId, app.virgil.engine.analysis.BookInsights(db), onBack = {}, onRead = {}, onSetLevel = {})
+                }
+            }
+        }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Dificuldade estimada".uppercase()).fetchSemanticsNodes().isNotEmpty() }
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/analise-livro.png")
     }
 
     private fun writeEpub(file: File) {

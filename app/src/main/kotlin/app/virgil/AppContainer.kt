@@ -12,6 +12,11 @@ import app.virgil.core.datastore.PreferencesStore
 import app.virgil.engine.books.BookFiles
 import app.virgil.engine.books.BookStore
 import app.virgil.engine.books.importer.ImportController
+import app.virgil.engine.analysis.AnalysisScheduler
+import app.virgil.engine.analysis.BookInsights
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import app.virgil.engine.translation.LocalTranslationEngine
 import app.virgil.engine.translation.ModelStore
 
@@ -36,6 +41,10 @@ class AppContainer(context: Context) {
     val bookStore by lazy { BookStore(database, bookFiles) }
     val imports by lazy { ImportController(appContext) }
     val models by lazy { ModelStore(appContext, database) }
+    val insights by lazy { BookInsights(database) }
+    /** Escopo de longa duração para tarefas do app (agendamento de análises). */
+    val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val analysisScheduler by lazy { AnalysisScheduler(appContext, database, appScope) }
     private val translatorLazy = lazy { LocalTranslationEngine(database, models, appContext.applicationInfo.nativeLibraryDir) }
     val translator by translatorLazy
     /** Evita criar o motor só para responder a onTrimMemory. */

@@ -37,6 +37,7 @@ import app.virgil.feature.reader.ReaderRoute
 import app.virgil.AppContainer
 import app.virgil.core.designsystem.component.VirgilDivider
 import app.virgil.core.designsystem.theme.Virgil
+import app.virgil.feature.library.BookDetailsRoute
 import app.virgil.feature.library.LibraryRoute
 import app.virgil.feature.progress.ProgressRoute
 import app.virgil.feature.review.ReviewRoute
@@ -54,6 +55,7 @@ import kotlin.reflect.KClass
 @Serializable object SettingsDest
 @Serializable object LicensesDest
 @Serializable object TranslationDest
+@Serializable data class BookDetailsDest(val bookId: Long)
 @Serializable data class ReaderDest(val bookId: Long)
 
 private data class TopLevel(val route: Any, val routeClass: KClass<*>, val label: String, val icon: ImageVector)
@@ -125,6 +127,7 @@ fun VirgilApp(container: AppContainer) {
                         imports = container.imports,
                         onOpenBook = { id -> nav.navigate(ReaderDest(id)) },
                         onOpenSettings = { nav.navigate(SettingsDest) },
+                        onBookDetails = { id -> nav.navigate(BookDetailsDest(id)) },
                     )
                 }
             }
@@ -154,7 +157,18 @@ fun VirgilApp(container: AppContainer) {
                     imageRoot = { rel -> java.io.File(container.booksRoot, rel).absolutePath },
                     onBack = { nav.popBackStack() },
                     onOpenTranslationSettings = { nav.navigate(TranslationDest) },
+                    onBookDetails = { nav.navigate(BookDetailsDest(dest.bookId)) },
                 )
+            }
+            composable<BookDetailsDest> { entry ->
+                val id = entry.toRoute<BookDetailsDest>().bookId
+                SafeArea(includeBottom = true) {
+                    BookDetailsRoute(
+                        bookId = id, insights = container.insights, onBack = { nav.popBackStack() },
+                        onRead = { nav.navigate(ReaderDest(id)) { popUpTo<BookDetailsDest> { inclusive = true } } },
+                        onSetLevel = { nav.navigate(SettingsDest) },
+                    )
+                }
             }
             composable<TranslationDest> {
                 SafeArea(includeBottom = true) { TranslationModelRoute(container.models, container.translator, onBack = { nav.popBackStack() }) }
