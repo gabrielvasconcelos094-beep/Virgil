@@ -53,7 +53,13 @@ abstract class VirgilDatabase : RoomDatabase() {
     companion object {
         const val NAME = "virgil.db"
 
-        fun build(context: Context): VirgilDatabase =
+        @Volatile private var instance: VirgilDatabase? = null
+
+        /** Instância única por processo (app, workers e widget compartilham o mesmo banco). */
+        fun getInstance(context: Context): VirgilDatabase =
+            instance ?: synchronized(this) { instance ?: build(context).also { instance = it } }
+
+        private fun build(context: Context): VirgilDatabase =
             Room.databaseBuilder(context.applicationContext, VirgilDatabase::class.java, NAME)
                 .addMigrations(*Migrations.ALL)
                 // Nunca destruir dados do usuário silenciosamente: sem fallbackToDestructiveMigration.

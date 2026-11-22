@@ -1,6 +1,6 @@
 # ADR-0001 — Modelo único de tradução
 
-- **Status:** proposto (aguarda confirmação do responsável pelo produto quanto ao perfil compacto)
+- **Status:** aceito (confirmado em 2026-11-22)
 - **Data:** 2026-11-22
 - **Evidências:** [benchmark de novembro/2026](../benchmark/2026-11-traducao.md)
 

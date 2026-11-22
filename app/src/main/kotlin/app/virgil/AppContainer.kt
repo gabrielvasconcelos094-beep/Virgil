@@ -17,7 +17,7 @@ import app.virgil.core.datastore.PreferencesStore
 class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
-    val database: VirgilDatabase by lazy { VirgilDatabase.build(appContext) }
+    val database: VirgilDatabase by lazy { VirgilDatabase.getInstance(appContext) }
     private val preferencesStore by lazy { PreferencesStore(appContext) }
 
     val preferences by lazy { PreferencesRepository(preferencesStore) }

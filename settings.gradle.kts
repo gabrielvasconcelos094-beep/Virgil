@@ -25,6 +25,10 @@ include(":core:designsystem")
 include(":core:database")
 include(":core:datastore")
 include(":core:data")
+include(":core:text")
+
+// Motores (sem UI)
+include(":engine:books")
 
 // Funcionalidades (uma por área de navegação)
 include(":feature:library")
