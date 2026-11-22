@@ -14,6 +14,7 @@ import app.virgil.core.model.AppPreferences
 import app.virgil.core.model.ReadingPreferences
 import app.virgil.core.model.ThemeMode
 import app.virgil.core.model.WidgetRefresh
+import app.virgil.core.model.WidgetTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -39,6 +40,8 @@ class PreferencesStore(context: Context) {
         val hyphenate = booleanPreferencesKey("reading_hyphenate")
         val autoSave = booleanPreferencesKey("auto_save_lookups")
         val widgetRefresh = stringPreferencesKey("widget_refresh")
+        val widgetTheme = stringPreferencesKey("widget_theme")
+        val widgetExample = booleanPreferencesKey("widget_example")
         val dailyReviewLimit = intPreferencesKey("daily_review_limit")
         val onboardingDone = booleanPreferencesKey("onboarding_done")
     }
@@ -61,6 +64,8 @@ class PreferencesStore(context: Context) {
                 ),
                 autoSaveLookups = p[K.autoSave] ?: d.autoSaveLookups,
                 widgetRefresh = p[K.widgetRefresh].toEnum(d.widgetRefresh),
+                widgetTheme = p[K.widgetTheme].toEnum(d.widgetTheme),
+                widgetShowExample = p[K.widgetExample] ?: d.widgetShowExample,
                 dailyReviewLimit = p[K.dailyReviewLimit] ?: d.dailyReviewLimit,
                 onboardingDone = p[K.onboardingDone] ?: d.onboardingDone,
             )
@@ -69,6 +74,8 @@ class PreferencesStore(context: Context) {
     suspend fun setTheme(mode: ThemeMode) = store.edit { it[K.theme] = mode.name }
     suspend fun setAutoSave(enabled: Boolean) = store.edit { it[K.autoSave] = enabled }
     suspend fun setWidgetRefresh(value: WidgetRefresh) = store.edit { it[K.widgetRefresh] = value.name }
+    suspend fun setWidgetTheme(value: WidgetTheme) = store.edit { it[K.widgetTheme] = value.name }
+    suspend fun setWidgetShowExample(value: Boolean) = store.edit { it[K.widgetExample] = value }
     suspend fun setDailyReviewLimit(value: Int) = store.edit { it[K.dailyReviewLimit] = value.coerceIn(5, 500) }
     suspend fun setOnboardingDone() = store.edit { it[K.onboardingDone] = true }
 

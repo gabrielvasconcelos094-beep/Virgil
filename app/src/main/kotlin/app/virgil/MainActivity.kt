@@ -1,5 +1,6 @@
 package app.virgil
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -13,11 +14,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.virgil.core.designsystem.theme.VirgilTheme
 import app.virgil.core.model.ThemeMode
 import app.virgil.ui.VirgilApp
+import app.virgil.widget.VocabularyWidget
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
+    /** Palavra a abrir no vocabulário (toque no widget). */
+    private val pendingEntry = MutableStateFlow<Long?>(null)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        readEntry(intent)
+    }
+
+    private fun readEntry(intent: Intent?) {
+        intent?.getLongExtra(VocabularyWidget.EXTRA_ENTRY, -1L)?.takeIf { it > 0 }?.let { pendingEntry.value = it }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) readEntry(intent)
         val container = (application as VirgilApplication).container
         setContent {
             val prefs by container.preferences.preferences.collectAsStateWithLifecycle(initialValue = null)
@@ -36,8 +52,9 @@ class MainActivity : ComponentActivity() {
                 )
                 onDispose {}
             }
+            val entry by pendingEntry.collectAsStateWithLifecycle()
             VirgilTheme(mode) {
-                VirgilApp(container)
+                VirgilApp(container, openEntryId = entry, onEntryOpened = { pendingEntry.value = null })
             }
         }
     }

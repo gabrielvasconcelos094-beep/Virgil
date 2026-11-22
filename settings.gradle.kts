@@ -32,6 +32,7 @@ include(":engine:books")
 include(":engine:llama")
 include(":engine:translation")
 include(":engine:analysis")
+include(":engine:srs")
 
 // Funcionalidades (uma por área de navegação)
 include(":feature:library")

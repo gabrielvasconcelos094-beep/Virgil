@@ -29,11 +29,15 @@ enum class WidgetRefresh(val minutes: Long, val labelPt: String) {
     Daily(1440, "Uma vez por dia"),
 }
 
+enum class WidgetTheme(val labelPt: String) { System("Seguir o sistema"), Light("Claro"), Dark("Escuro") }
+
 data class AppPreferences(
     val theme: ThemeMode = ThemeMode.System,
     val reading: ReadingPreferences = ReadingPreferences(),
     val autoSaveLookups: Boolean = true,
     val widgetRefresh: WidgetRefresh = WidgetRefresh.Every3h,
+    val widgetTheme: WidgetTheme = WidgetTheme.System,
+    val widgetShowExample: Boolean = true,
     val dailyReviewLimit: Int = 40,
     val onboardingDone: Boolean = false,
 )

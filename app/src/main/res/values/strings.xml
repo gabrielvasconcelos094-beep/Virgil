@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Virgil</string>
+    <string name="widget_name">Palavra do vocabulário</string>
+    <string name="widget_description">Uma palavra dos seus livros, com tradução e a frase em que apareceu.</string>
 </resources>

@@ -61,11 +61,13 @@ import app.virgil.core.model.ReadingFont
 import app.virgil.core.model.ReadingPreferences
 import app.virgil.core.model.TextAlign
 import app.virgil.core.model.ThemeMode
+import app.virgil.core.model.WidgetRefresh
+import app.virgil.core.model.WidgetTheme
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
 
 @Composable
-fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileRepository, onBack: () -> Unit, onOpenLicenses: () -> Unit, onOpenTranslation: () -> Unit = {}, translationSummary: String? = null) {
+fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileRepository, onBack: () -> Unit, onOpenLicenses: () -> Unit, onOpenTranslation: () -> Unit = {}, translationSummary: String? = null, onWidgetChanged: () -> Unit = {}) {
     val prefs by prefsRepo.preferences.collectAsStateWithLifecycle(initialValue = null)
     val profiles by remember(profileRepo) { profileRepo.profiles() }.collectAsStateWithLifecycle(initialValue = emptyList())
     val scope = rememberCoroutineScope()
@@ -81,6 +83,9 @@ fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileReposito
         onOpenLicenses = onOpenLicenses,
         onOpenTranslation = onOpenTranslation,
         translationSummary = translationSummary,
+        onWidgetRefresh = { scope.launch { prefsRepo.update { setWidgetRefresh(it) }; onWidgetChanged() } },
+        onWidgetTheme = { scope.launch { prefsRepo.update { setWidgetTheme(it) }; onWidgetChanged() } },
+        onWidgetExample = { scope.launch { prefsRepo.update { setWidgetShowExample(it) }; onWidgetChanged() } },
     )
 }
 
@@ -96,6 +101,9 @@ fun SettingsScreen(
     onOpenLicenses: () -> Unit,
     onOpenTranslation: () -> Unit = {},
     translationSummary: String? = null,
+    onWidgetRefresh: (WidgetRefresh) -> Unit = {},
+    onWidgetTheme: (WidgetTheme) -> Unit = {},
+    onWidgetExample: (Boolean) -> Unit = {},
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = Spacing.xxl)) {
         Row(Modifier.padding(start = Spacing.xs, top = Spacing.md), verticalAlignment = Alignment.CenterVertically) {
@@ -136,6 +144,13 @@ fun SettingsScreen(
         Divider()
         SectionLabel("Vocabulário")
         SwitchRow("Salvar consultas automaticamente", "Palavras e expressões consultadas no leitor entram no vocabulário", prefs.autoSaveLookups, onAutoSave)
+
+        Divider()
+        SectionLabel("Widget da tela inicial")
+        Text("Mostra uma palavra do seu vocabulário. Para adicioná-lo, toque e segure na tela inicial do Android e escolha Widgets → Virgil.", style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary, modifier = Modifier.padding(horizontal = Spacing.screen))
+        ChipRow { WidgetRefresh.entries.forEach { r -> QuietChip(r.labelPt, prefs.widgetRefresh == r) { onWidgetRefresh(r) } } }
+        ChipRow { WidgetTheme.entries.forEach { t -> QuietChip(t.labelPt, prefs.widgetTheme == t) { onWidgetTheme(t) } } }
+        SwitchRow("Mostrar a frase do livro", "Quando o widget tiver espaço", prefs.widgetShowExample, onWidgetExample)
 
         Divider()
         SectionLabel("Tradução")

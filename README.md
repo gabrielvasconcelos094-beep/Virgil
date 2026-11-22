@@ -19,8 +19,8 @@ Livros em português também podem ser lidos.
 | 2 | Importação EPUB/TXT, biblioteca, leitor, seleção de palavras | ✅ |
 | 3 | Motor de tradução local (llama.cpp + modelo único) | ✅ (falta medir no aparelho) |
 | 4 | Análise de dificuldade CEFR | ✅ (calibração pendente) |
-| 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | próxima |
-| 6 | Polimento, desempenho, testes de ponta a ponta | — |
+| 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | ✅ |
+| 6 | Polimento, desempenho, testes de ponta a ponta | em andamento |
 
 O que já funciona de verdade nesta versão:
 
@@ -37,7 +37,14 @@ O que já funciona de verdade nesta versão:
   (vocabulário por cobertura de frequência, sintaxe, formas verbais literárias por idioma, estilo,
   variante linguística), faixa por livro e por capítulo, observações em português, comparação com o
   nível declarado pelo leitor. Apresentada como estimativa preliminar até a calibração.
-- **Vocabulário, níveis, preferências e estatísticas de tempo de leitura** persistidos localmente.
+- **Revisão espaçada (FSRS-5):** palavras vencidas + até 15 novas por dia, sempre com a frase do
+  livro; respostas Esqueci/Difícil/Bom/Fácil com o próximo intervalo visível; palavras com memória
+  estável (≥ 90 dias) passam a "aprendidas".
+- **Widget:** palavra do vocabulário com tradução e frase de origem; frequência de troca e tema
+  configuráveis; abre a ficha da palavra ao toque; funciona offline.
+- **Progresso:** livros, concluídos, tempo de leitura, minutos por dia e revisões por dia (14 dias),
+  leituras em andamento, palavras aprendidas por idioma.
+- **Vocabulário, níveis e preferências** persistidos localmente.
 
 - **Tradução local:** um único modelo (TranslateGemma 4B, ou Hy-MT2 1.8B em aparelhos com 4 GB),
   baixado uma vez em segundo plano (retomável, só em Wi-Fi por padrão, SHA-256 verificado) ou

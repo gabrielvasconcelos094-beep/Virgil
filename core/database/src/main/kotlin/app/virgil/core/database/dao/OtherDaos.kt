@@ -16,10 +16,77 @@ import app.virgil.core.database.entity.ReviewLogEntity
 import app.virgil.core.database.entity.TranslationCacheEntity
 import kotlinx.coroutines.flow.Flow
 
+/** Item de revisão: entrada de vocabulário + estado do cartão (nulo para palavras ainda não revisadas). */
+data class ReviewItemRow(
+    val id: Long,
+    val term: String,
+    val language: String,
+    val translation: String,
+    val context_sentence: String?,
+    val context_translation: String?,
+    val book_title: String?,
+    val chapter_index: Int?,
+    val stability: Double?,
+    val difficulty: Double?,
+    val due_at: Long?,
+    val last_review_at: Long?,
+    val reps: Int?,
+    val lapses: Int?,
+    val phase: String?,
+)
+
 @Dao
 interface ReviewDao {
-    @Query("SELECT COUNT(*) FROM review_cards WHERE due_at <= :now")
+    @Query(
+        """
+        SELECT COUNT(*) FROM review_cards c JOIN vocabulary v ON v.id = c.vocabulary_id
+        WHERE c.due_at <= :now AND v.state NOT IN ('Known', 'Ignored') AND v.translation != ''
+        """,
+    )
     fun observeDueCount(now: Long): Flow<Int>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM vocabulary v LEFT JOIN review_cards c ON c.vocabulary_id = v.id
+        WHERE c.vocabulary_id IS NULL AND v.state IN ('New', 'Learning') AND v.translation != ''
+        """,
+    )
+    fun observeNewAvailable(): Flow<Int>
+
+    /** Palavras revisadas pela primeira vez a partir de [since] (limite diário de novidades). */
+    @Query(
+        """
+        SELECT COUNT(DISTINCT l.vocabulary_id) FROM review_logs l WHERE l.reviewed_at >= :since
+          AND NOT EXISTS (SELECT 1 FROM review_logs p WHERE p.vocabulary_id = l.vocabulary_id AND p.reviewed_at < :since)
+        """,
+    )
+    fun observeNewStudiedSince(since: Long): Flow<Int>
+
+    @Query(
+        """
+        SELECT v.id, v.term, v.language, v.translation, v.context_sentence, v.context_translation, b.title AS book_title, v.chapter_index,
+               c.stability, c.difficulty, c.due_at, c.last_review_at, c.reps, c.lapses, c.phase
+        FROM review_cards c JOIN vocabulary v ON v.id = c.vocabulary_id LEFT JOIN books b ON b.id = v.book_id
+        WHERE c.due_at <= :now AND v.state NOT IN ('Known', 'Ignored') AND v.translation != ''
+        ORDER BY c.due_at LIMIT :limit
+        """,
+    )
+    suspend fun dueItems(now: Long, limit: Int): List<ReviewItemRow>
+
+    @Query(
+        """
+        SELECT v.id, v.term, v.language, v.translation, v.context_sentence, v.context_translation, b.title AS book_title, v.chapter_index,
+               NULL AS stability, NULL AS difficulty, NULL AS due_at, NULL AS last_review_at, NULL AS reps, NULL AS lapses, NULL AS phase
+        FROM vocabulary v LEFT JOIN review_cards c ON c.vocabulary_id = v.id LEFT JOIN books b ON b.id = v.book_id
+        WHERE c.vocabulary_id IS NULL AND v.state IN ('New', 'Learning') AND v.translation != ''
+        ORDER BY v.created_at LIMIT :limit
+        """,
+    )
+    suspend fun newItems(limit: Int): List<ReviewItemRow>
+
+    /** Revisões por dia (para o gráfico de progresso). */
+    @Query("SELECT (reviewed_at + :tzOffsetMs) / 86400000 AS day, COUNT(*) AS ms FROM review_logs WHERE reviewed_at >= :since GROUP BY day ORDER BY day")
+    fun observeDailyReviews(since: Long, tzOffsetMs: Long): Flow<List<DailyReading>>
 
     @Query("SELECT * FROM review_cards WHERE due_at <= :now ORDER BY due_at LIMIT :limit")
     suspend fun due(now: Long, limit: Int): List<ReviewCardEntity>

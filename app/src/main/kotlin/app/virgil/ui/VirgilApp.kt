@@ -45,6 +45,7 @@ import app.virgil.feature.settings.LicensesScreen
 import app.virgil.feature.settings.SettingsRoute
 import app.virgil.feature.settings.TranslationModelRoute
 import app.virgil.feature.vocabulary.VocabularyRoute
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
@@ -68,12 +69,18 @@ private val TopLevels = listOf(
 )
 
 @Composable
-fun VirgilApp(container: AppContainer) {
+fun VirgilApp(container: AppContainer, openEntryId: Long? = null, onEntryOpened: () -> Unit = {}) {
     val nav = rememberNavController()
+    // Toque no widget: vai para o vocabulário e abre a ficha.
+    androidx.compose.runtime.LaunchedEffect(openEntryId) {
+        if (openEntryId != null) nav.navigate(VocabularyDest) { launchSingleTop = true }
+    }
     val backStack by nav.currentBackStackEntryAsState()
     val destination = backStack?.destination
     val showBar = TopLevels.any { t -> destination?.hierarchy?.any { it.hasRoute(t.routeClass) } == true }
 
+    val context = androidx.compose.ui.platform.LocalContext.current.applicationContext
+    val widgetScope = androidx.compose.runtime.rememberCoroutineScope()
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0),
@@ -131,7 +138,7 @@ fun VirgilApp(container: AppContainer) {
                     )
                 }
             }
-            composable<VocabularyDest> { SafeArea { VocabularyRoute(container.vocabulary) } }
+            composable<VocabularyDest> { SafeArea { VocabularyRoute(container.vocabulary, openEntryId = openEntryId, onEntryConsumed = onEntryOpened) } }
             composable<ReviewDest> { SafeArea { ReviewRoute(container.reviews) } }
             composable<ProgressDest> { SafeArea { ProgressRoute(container.progress) } }
             composable<SettingsDest> {
@@ -142,6 +149,7 @@ fun VirgilApp(container: AppContainer) {
                         onBack = { nav.popBackStack() },
                         onOpenLicenses = { nav.navigate(LicensesDest) },
                         onOpenTranslation = { nav.navigate(TranslationDest) },
+                        onWidgetChanged = { widgetScope.launch { app.virgil.widget.WidgetUpdateWorker.schedule(context, replace = true) } },
                         translationSummary = translationSummary(container),
                     )
                 }
