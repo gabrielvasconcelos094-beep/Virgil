@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import app.virgil.core.model.AppPreferences
 import app.virgil.core.model.ReadingPreferences
+import app.virgil.core.model.SpeechPreferences
 import app.virgil.core.model.ThemeMode
 import app.virgil.core.model.WidgetRefresh
 import app.virgil.core.model.WidgetTheme
@@ -44,6 +45,10 @@ class PreferencesStore(context: Context) {
         val widgetExample = booleanPreferencesKey("widget_example")
         val dailyReviewLimit = intPreferencesKey("daily_review_limit")
         val onboardingDone = booleanPreferencesKey("onboarding_done")
+        val speechAuto = booleanPreferencesKey("speech_auto_play")
+        val speechIpa = booleanPreferencesKey("speech_show_ipa")
+        val speechRate = floatPreferencesKey("speech_rate")
+        val speechVoices = stringPreferencesKey("speech_voices")
     }
 
     val preferences: Flow<AppPreferences> = store.data
@@ -68,6 +73,12 @@ class PreferencesStore(context: Context) {
                 widgetShowExample = p[K.widgetExample] ?: d.widgetShowExample,
                 dailyReviewLimit = p[K.dailyReviewLimit] ?: d.dailyReviewLimit,
                 onboardingDone = p[K.onboardingDone] ?: d.onboardingDone,
+                speech = SpeechPreferences(
+                    autoPlay = p[K.speechAuto] ?: d.speech.autoPlay,
+                    showIpa = p[K.speechIpa] ?: d.speech.showIpa,
+                    rate = p[K.speechRate] ?: d.speech.rate,
+                    voices = decodeVoices(p[K.speechVoices]),
+                ),
             )
         }
 
@@ -78,6 +89,16 @@ class PreferencesStore(context: Context) {
     suspend fun setWidgetShowExample(value: Boolean) = store.edit { it[K.widgetExample] = value }
     suspend fun setDailyReviewLimit(value: Int) = store.edit { it[K.dailyReviewLimit] = value.coerceIn(5, 500) }
     suspend fun setOnboardingDone() = store.edit { it[K.onboardingDone] = true }
+    suspend fun setSpeechAutoPlay(value: Boolean) = store.edit { it[K.speechAuto] = value }
+    suspend fun setShowIpa(value: Boolean) = store.edit { it[K.speechIpa] = value }
+    suspend fun setSpeechRate(value: Float) = store.edit { it[K.speechRate] = value.coerceIn(0.5f, 1.5f) }
+
+    /** Escolhe a voz de um idioma; null volta à escolha automática. */
+    suspend fun setVoice(languageIso: String, voiceId: String?) = store.edit {
+        val m = decodeVoices(it[K.speechVoices]).toMutableMap()
+        if (voiceId == null) m.remove(languageIso) else m[languageIso] = voiceId
+        it[K.speechVoices] = m.entries.joinToString("\n") { (k, v) -> "$k=$v" }
+    }
 
     suspend fun setReading(r: ReadingPreferences) = store.edit {
         it[K.font] = r.font.name
@@ -89,6 +110,9 @@ class PreferencesStore(context: Context) {
         it[K.hyphenate] = r.hyphenate
     }
 }
+
+internal fun decodeVoices(raw: String?): Map<String, String> =
+    raw.orEmpty().lineSequence().mapNotNull { l -> l.split('=', limit = 2).takeIf { it.size == 2 && it[0].isNotBlank() }?.let { it[0] to it[1] } }.toMap()
 
 private inline fun <reified E : Enum<E>> String?.toEnum(default: E): E =
     this?.let { name -> enumValues<E>().firstOrNull { it.name == name } } ?: default

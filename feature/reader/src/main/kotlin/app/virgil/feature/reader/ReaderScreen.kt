@@ -105,8 +105,10 @@ fun ReaderRoute(
     onBack: () -> Unit,
     onOpenTranslationSettings: () -> Unit,
     onBookDetails: () -> Unit = {},
+    speech: app.virgil.engine.speech.SpeechEngine? = null,
+    ipa: app.virgil.engine.speech.IpaSource? = null,
 ) {
-    val vm: ReaderViewModel = viewModel(key = "reader-$bookId", factory = viewModelFactory { initializer { ReaderViewModel(bookId, store, vocabulary, preferences, translator) } })
+    val vm: ReaderViewModel = viewModel(key = "reader-$bookId", factory = viewModelFactory { initializer { ReaderViewModel(bookId, store, vocabulary, preferences, translator, speech, ipa) } })
     val state by vm.state.collectAsStateWithLifecycle()
     val prefs by vm.prefs.collectAsStateWithLifecycle()
     val bookmarks by vm.bookmarks.collectAsStateWithLifecycle()
@@ -246,7 +248,17 @@ private fun ReaderScreen(
             modifier = Modifier.align(Alignment.BottomCenter),
         ) {
             state.lookup?.let { l ->
-                LookupCard(l, onKind = vm::expand, onSave = vm::saveSelection, onClose = vm::clearSelection, onOpenSettings = onOpenTranslationSettings)
+                val speaking by vm.speaking.collectAsStateWithLifecycle()
+                val voiceReady by vm.voiceReady.collectAsStateWithLifecycle()
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val controls = if (!vm.hasSpeech) null else SpeechControls(
+                    playing = speaking == l.speechId,
+                    availability = remember(voiceReady, state.language) { vm.voiceAvailability() },
+                    languageName = (state.language ?: app.virgil.core.model.Language.EN_GB).displayNamePt.lowercase().substringBefore(" ("),
+                    onPlay = vm::speak,
+                    onInstallVoice = { openVoiceInstall(context) },
+                )
+                LookupCard(l, onKind = vm::expand, onSave = vm::saveSelection, onClose = vm::clearSelection, onOpenSettings = onOpenTranslationSettings, speech = controls)
             }
         }
     }
@@ -354,3 +366,10 @@ private fun Immersive(hidden: Boolean) {
     }
 }
 
+
+/** Abre a instalação de dados de voz do mecanismo do sistema (ou as configurações de voz). */
+internal fun openVoiceInstall(context: android.content.Context) {
+    val install = android.content.Intent(android.speech.tts.TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    val settings = android.content.Intent("com.android.settings.TTS_SETTINGS").addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    runCatching { context.startActivity(install) }.recoverCatching { context.startActivity(settings) }
+}

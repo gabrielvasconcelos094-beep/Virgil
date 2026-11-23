@@ -1,0 +1,32 @@
+{
+ "en": {
+  "books": 40,
+  "tokens": 3433526,
+  "covered_pct": 93.9
+ },
+ "fr": {
+  "books": 40,
+  "tokens": 2302917,
+  "covered_pct": 85.7
+ },
+ "de": {
+  "books": 40,
+  "tokens": 2018768,
+  "covered_pct": 75.0
+ },
+ "it": {
+  "books": 40,
+  "tokens": 2280469,
+  "covered_pct": 78.5
+ },
+ "es": {
+  "books": 40,
+  "tokens": 2641980,
+  "covered_pct": 80.6
+ },
+ "pt": {
+  "books": 40,
+  "tokens": 1390716,
+  "covered_pct": 69.3
+ }
+}

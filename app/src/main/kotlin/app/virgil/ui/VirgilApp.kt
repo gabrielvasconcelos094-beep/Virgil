@@ -55,6 +55,7 @@ import kotlin.reflect.KClass
 @Serializable object ProgressDest
 @Serializable object SettingsDest
 @Serializable object LicensesDest
+@Serializable object SpeechDest
 @Serializable object TranslationDest
 @Serializable data class BookDetailsDest(val bookId: Long)
 @Serializable data class ReaderDest(val bookId: Long)
@@ -149,6 +150,7 @@ fun VirgilApp(container: AppContainer, openEntryId: Long? = null, onEntryOpened:
                         onBack = { nav.popBackStack() },
                         onOpenLicenses = { nav.navigate(LicensesDest) },
                         onOpenTranslation = { nav.navigate(TranslationDest) },
+                        onOpenSpeech = { nav.navigate(SpeechDest) },
                         onWidgetChanged = { widgetScope.launch { app.virgil.widget.WidgetUpdateWorker.schedule(context, replace = true) } },
                         translationSummary = translationSummary(container),
                     )
@@ -162,6 +164,8 @@ fun VirgilApp(container: AppContainer, openEntryId: Long? = null, onEntryOpened:
                     vocabulary = container.vocabulary,
                     preferences = container.preferences,
                     translator = container.translator,
+                    speech = container.speech,
+                    ipa = container.ipa,
                     imageRoot = { rel -> java.io.File(container.booksRoot, rel).absolutePath },
                     onBack = { nav.popBackStack() },
                     onOpenTranslationSettings = { nav.navigate(TranslationDest) },
@@ -180,6 +184,11 @@ fun VirgilApp(container: AppContainer, openEntryId: Long? = null, onEntryOpened:
             }
             composable<TranslationDest> {
                 SafeArea(includeBottom = true) { TranslationModelRoute(container.models, container.translator, onBack = { nav.popBackStack() }) }
+            }
+            composable<SpeechDest> {
+                SafeArea(includeBottom = true) {
+                    app.virgil.feature.settings.SpeechSettingsRoute(container.preferences, container.speech, onBack = { container.speech.stop(); nav.popBackStack() })
+                }
             }
             composable<LicensesDest> { SafeArea(includeBottom = true) { LicensesScreen(onBack = { nav.popBackStack() }) } }
         }

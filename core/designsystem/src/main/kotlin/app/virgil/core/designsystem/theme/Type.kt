@@ -38,6 +38,12 @@ object VirgilFonts {
         Font(R.font.inter_bold, FontWeight.Bold),
     )
 
+    /**
+     * Charis SIL (SIL International, OFL 1.1, sem modificações): cobre todo o Alfabeto Fonético
+     * Internacional, inclusive diacríticos combinantes (ʊ̯, n̩, d͡ʒ), que faltam em Literata e Inter.
+     */
+    val Ipa = FontFamily(Font(R.font.charis_regular, FontWeight.Normal))
+
     fun reading(font: ReadingFont): FontFamily = when (font) {
         ReadingFont.Literata -> Literata
         ReadingFont.SourceSerif -> SourceSerif
@@ -70,3 +76,6 @@ val VirgilTypography = Typography(
 
 /** Estilo para palavras estrangeiras em fichas e pop-ups (sempre serifado, como no livro). */
 val ForeignTermStyle = TextStyle(fontFamily = VirgilFonts.Literata, fontWeight = FontWeight.SemiBold, fontSize = 22.sp, lineHeight = 28.sp)
+
+/** Transcrição fonética no cartão de consulta. */
+val IpaStyle = TextStyle(fontFamily = VirgilFonts.Ipa, fontWeight = FontWeight.Normal, fontSize = 17.sp, lineHeight = 24.sp)

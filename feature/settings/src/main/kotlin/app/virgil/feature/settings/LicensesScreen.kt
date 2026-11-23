@@ -27,6 +27,14 @@ private val Notices = listOf(
     Notice("Source Serif 4", "SIL Open Font License 1.1", "© Adobe"),
     Notice("EB Garamond", "SIL Open Font License 1.1", "© The EB Garamond Project Authors"),
     Notice("Inter", "SIL Open Font License 1.1", "© The Inter Project Authors"),
+    Notice("Charis SIL (transcrições fonéticas)", "SIL Open Font License 1.1", "© SIL International"),
+    Notice(
+        "Transcrições fonéticas (IPA)", "Creative Commons BY-SA 4.0",
+        "Wiktionary (en.wiktionary.org), colaboradores do Wiktionary; extraídas com wiktextract (Tatu Ylonen) e adaptadas (variante e formato).",
+    ),
+    Notice("Listas de frequência de palavras (wordfreq)", "Creative Commons BY-SA 4.0", "© Robyn Speer e colaboradores (dados), usadas na estimativa de dificuldade"),
+    Notice("llama.cpp / ggml", "MIT License", "© The ggml authors"),
+    Notice("jsoup", "MIT License", "© Jonathan Hedley"),
     Notice("Android Jetpack (Compose, Room, DataStore, Navigation, Lifecycle)", "Apache License 2.0", "© The Android Open Source Project"),
     Notice("Kotlin e kotlinx.coroutines", "Apache License 2.0", "© JetBrains s.r.o."),
 )

@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":engine:books"))
     implementation(project(":engine:translation"))
+    implementation(project(":engine:speech"))
     implementation(project(":engine:analysis"))
     implementation(project(":feature:library"))
     implementation(project(":feature:reader"))

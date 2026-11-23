@@ -67,7 +67,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
 
 @Composable
-fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileRepository, onBack: () -> Unit, onOpenLicenses: () -> Unit, onOpenTranslation: () -> Unit = {}, translationSummary: String? = null, onWidgetChanged: () -> Unit = {}) {
+fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileRepository, onBack: () -> Unit, onOpenLicenses: () -> Unit, onOpenTranslation: () -> Unit = {}, translationSummary: String? = null, onWidgetChanged: () -> Unit = {}, onOpenSpeech: () -> Unit = {}) {
     val prefs by prefsRepo.preferences.collectAsStateWithLifecycle(initialValue = null)
     val profiles by remember(profileRepo) { profileRepo.profiles() }.collectAsStateWithLifecycle(initialValue = emptyList())
     val scope = rememberCoroutineScope()
@@ -82,6 +82,7 @@ fun SettingsRoute(prefsRepo: PreferencesRepository, profileRepo: ProfileReposito
         onLevel = { l, c -> scope.launch { profileRepo.setLevel(l, c) } },
         onOpenLicenses = onOpenLicenses,
         onOpenTranslation = onOpenTranslation,
+        onOpenSpeech = onOpenSpeech,
         translationSummary = translationSummary,
         onWidgetRefresh = { scope.launch { prefsRepo.update { setWidgetRefresh(it) }; onWidgetChanged() } },
         onWidgetTheme = { scope.launch { prefsRepo.update { setWidgetTheme(it) }; onWidgetChanged() } },
@@ -100,6 +101,7 @@ fun SettingsScreen(
     onLevel: (Language, CefrLevel?) -> Unit,
     onOpenLicenses: () -> Unit,
     onOpenTranslation: () -> Unit = {},
+    onOpenSpeech: () -> Unit = {},
     translationSummary: String? = null,
     onWidgetRefresh: (WidgetRefresh) -> Unit = {},
     onWidgetTheme: (WidgetTheme) -> Unit = {},
@@ -158,6 +160,17 @@ fun SettingsScreen(
             Text("Modelo de tradução", style = MaterialTheme.typography.bodyLarge, color = Virgil.colors.textPrimary)
             Text(
                 translationSummary ?: "Nenhum modelo instalado. A tradução acontece inteiramente no aparelho; o modelo é baixado uma única vez.",
+                style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary,
+            )
+        }
+
+        Divider()
+        SectionLabel("Pronúncia")
+        Column(Modifier.fillMaxWidth().clickable(onClick = onOpenSpeech).padding(horizontal = Spacing.screen, vertical = Spacing.sm)) {
+            Text("Voz e transcrição fonética", style = MaterialTheme.typography.bodyLarge, color = Virgil.colors.textPrimary)
+            Text(
+                "Voz do Android no idioma do livro · velocidade ${SpeechRates.firstOrNull { kotlin.math.abs(it.first - prefs.speech.rate) < 0.01f }?.second?.lowercase() ?: "personalizada"}" +
+                    (if (prefs.speech.autoPlay) " · toca ao consultar" else "") + (if (prefs.speech.showIpa) " · IPA" else ""),
                 style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary,
             )
         }

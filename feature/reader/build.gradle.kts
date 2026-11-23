@@ -11,4 +11,5 @@ dependencies {
     implementation(project(":core:text"))
     implementation(project(":core:database"))
     implementation(project(":engine:translation"))
+    implementation(project(":engine:speech"))
 }

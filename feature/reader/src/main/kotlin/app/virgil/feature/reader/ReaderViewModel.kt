@@ -19,6 +19,9 @@ import app.virgil.engine.translation.EngineStatus
 import app.virgil.engine.translation.TranslationEvent
 import app.virgil.engine.translation.TranslationRequest
 import app.virgil.engine.translation.Translator
+import app.virgil.engine.speech.IpaSource
+import app.virgil.engine.speech.SpeechEngine
+import app.virgil.engine.speech.VoiceAvailability
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -47,12 +50,22 @@ sealed interface TranslationUi {
     data class Failed(val message: String) : TranslationUi
 }
 
+/** Transcrição no cartão: ainda buscando, ausente no dicionário, ou encontrada. */
+sealed interface IpaUi {
+    data object Loading : IpaUi
+    data object Missing : IpaUi
+    data class Found(val ipa: String, val note: String?) : IpaUi
+}
+
 data class LookupUi(
     val selection: TextSelection,
     val text: String,
     val context: String?,
     val translation: TranslationUi,
     val saved: Boolean,
+    val ipa: IpaUi = IpaUi.Missing,
+    /** Id do pedido de fala desta seleção (para o botão mostrar "tocando"). */
+    val speechId: String = "",
 )
 
 /** Pedido de rolagem: ir ao bloco, com fração dentro dele (restaurar posição, sumário, marcador). */
@@ -86,9 +99,17 @@ class ReaderViewModel(
     private val vocabulary: VocabularyRepository,
     private val prefsRepo: PreferencesRepository,
     private val translator: Translator? = null,
+    private val speech: SpeechEngine? = null,
+    private val ipa: IpaSource? = null,
     private val clock: () -> Long = System::currentTimeMillis,
 ) : ViewModel() {
     private var translateJob: Job? = null
+    private var ipaJob: Job? = null
+
+    /** Id do que está sendo falado agora (null = silêncio). */
+    val speaking: StateFlow<String?> = speech?.speaking ?: MutableStateFlow(null)
+    val voiceReady: StateFlow<Boolean> = speech?.ready ?: MutableStateFlow(false)
+    val hasSpeech: Boolean get() = speech != null
     private val _state = MutableStateFlow(ReaderUiState())
     val state: StateFlow<ReaderUiState> = _state.asStateFlow()
 
@@ -121,6 +142,8 @@ class ReaderViewModel(
             }
             opened = book
             segmenter = TextSegmenter(book.language ?: Language.EN_GB)
+            // Léxico IPA do idioma do livro já em memória antes do primeiro toque.
+            (ipa as? app.virgil.engine.speech.LexiconIpaSource)?.let { src -> launch { src.preload(book.language ?: Language.EN_GB) } }
             bookIdFlow.value = book.book.id
             _state.update {
                 it.copy(
@@ -285,7 +308,26 @@ class ReaderViewModel(
             translator?.status?.value is EngineStatus.Unsupported -> TranslationUi.Failed((translator.status.value as EngineStatus.Unsupported).reason)
             else -> TranslationUi.NoModel
         }
-        _state.update { it.copy(lookup = LookupUi(sel, text, context, initial, saved = false), controlsVisible = false) }
+        val isTerm = sel.kind == SelectionKind.Word || sel.kind == SelectionKind.Expression
+        val speechId = "${sel.blockIndex}:${sel.start}:${sel.end}"
+        val wantsIpa = translate && sel.kind == SelectionKind.Word && ipa != null && prefs.value?.speech?.showIpa != false
+        _state.update {
+            it.copy(
+                lookup = LookupUi(sel, text, context, initial, saved = false, ipa = if (wantsIpa) IpaUi.Loading else IpaUi.Missing, speechId = speechId),
+                controlsVisible = false,
+            )
+        }
+        // 1) áudio imediatamente (independe do modelo de tradução); 2) IPA; 3) tradução quando pronta.
+        if (translate && isTerm && prefs.value?.speech?.autoPlay != false) speak()
+        ipaJob?.cancel()
+        if (wantsIpa) {
+            val before = wordsBefore(block.text, sel.start)
+            ipaJob = viewModelScope.launch {
+                val p = runCatching { ipa?.lookup(opened?.language ?: Language.EN_GB, text, before) }.getOrNull()
+                val ui = if (p == null) IpaUi.Missing else IpaUi.Found(p.ipa, p.note)
+                _state.update { s -> s.copy(lookup = s.lookup?.takeIf { it.selection == sel }?.copy(ipa = ui) ?: s.lookup) }
+            }
+        }
         if (!translate || !available || translator == null) return
         sessionLookups++
         val book = opened
@@ -310,7 +352,33 @@ class ReaderViewModel(
         }
     }
 
+    // ------------------------------------------------------------------ pronúncia
+
+    /** Disponibilidade de voz para o idioma do livro (o cartão avisa se faltar). */
+    fun voiceAvailability(): VoiceAvailability =
+        speech?.availability(opened?.language ?: Language.EN_GB) ?: VoiceAvailability.Unavailable
+
+    /** Fala (ou repete) o texto selecionado no idioma do livro; tocar de novo enquanto fala interrompe. */
+    fun speak() {
+        val l = _state.value.lookup ?: return
+        val engine = speech ?: return
+        if (speaking.value == l.speechId) { engine.stop(); return }
+        val language = opened?.language ?: Language.EN_GB
+        val sp = prefs.value?.speech
+        engine.speak(l.text, language, rate = sp?.rate ?: 0.9f, voiceId = sp?.voices?.get(language.iso639), id = l.speechId)
+    }
+
+    /** Até três palavras antes da seleção, na mesma frase (para escolher entre homógrafos). */
+    private fun wordsBefore(text: String, start: Int): List<String> {
+        val sentence = segmenter.sentenceAround(text, start, start + 1)
+        val from = sentence.first.coerceAtMost(start)
+        val chunk = text.substring(from, start)
+        return segmenter.words(chunk).takeLast(3).map { chunk.substring(it.first, it.last + 1) }
+    }
+
     fun clearSelection() {
+        speech?.stop()
+        ipaJob?.cancel()
         translateJob?.cancel()
         lastWordSelection = null
         dragAnchor = null
@@ -387,6 +455,7 @@ class ReaderViewModel(
     }
 
     override fun onCleared() {
+        speech?.stop()
         translator?.release()
     }
 

@@ -8,5 +8,6 @@ android {
 
 dependencies {
     implementation(project(":engine:translation"))
+    implementation(project(":engine:speech"))
     implementation(libs.androidx.work.runtime)
 }

@@ -18,6 +18,8 @@ import androidx.compose.material.icons.outlined.BookmarkAdd
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Stop
+import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import app.virgil.core.designsystem.component.QuietChip
 import app.virgil.core.designsystem.component.VirgilDivider
 import app.virgil.core.designsystem.theme.ForeignTermStyle
+import app.virgil.core.designsystem.theme.IpaStyle
+import app.virgil.engine.speech.VoiceAvailability
 import app.virgil.core.designsystem.theme.Spacing
 import app.virgil.core.designsystem.theme.Virgil
 import app.virgil.core.designsystem.theme.VirgilFonts
@@ -52,6 +56,7 @@ internal fun LookupCard(
     onSave: () -> Unit,
     onClose: () -> Unit,
     onOpenSettings: () -> Unit,
+    speech: SpeechControls? = null,
 ) {
     val clipboard = LocalClipboardManager.current
     val isTerm = l.selection.kind == SelectionKind.Word || l.selection.kind == SelectionKind.Expression
@@ -73,6 +78,7 @@ internal fun LookupCard(
             Column(Modifier.padding(end = Spacing.lg).heightIn(max = 220.dp).verticalScroll(rememberScrollState())) {
                 if (isTerm) {
                     Text(l.text, style = ForeignTermStyle, color = Virgil.colors.textPrimary)
+                    IpaLine(l.ipa)
                 } else {
                     Text(l.text, style = MaterialTheme.typography.bodyLarge.copy(fontFamily = VirgilFonts.Literata), color = Virgil.colors.textPrimary)
                 }
@@ -90,6 +96,14 @@ internal fun LookupCard(
                 }
             }
             Row(Modifier.padding(top = Spacing.xs), verticalAlignment = Alignment.CenterVertically) {
+                if (speech != null) {
+                    val playing = speech.playing
+                    TextButton(onClick = speech.onPlay) {
+                        Icon(if (playing) Icons.Outlined.Stop else Icons.AutoMirrored.Outlined.VolumeUp, null, Modifier.size(18.dp))
+                        Spacer(Modifier.size(6.dp))
+                        Text(if (playing) "Parar" else "Ouvir")
+                    }
+                }
                 if (isTerm) {
                     TextButton(onClick = onSave, enabled = !l.saved) {
                         Icon(if (l.saved) Icons.Outlined.Check else Icons.Outlined.BookmarkAdd, null, Modifier.size(18.dp))
@@ -100,7 +114,46 @@ internal fun LookupCard(
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = { clipboard.setText(AnnotatedString(l.text)) }) { Icon(Icons.Outlined.ContentCopy, "Copiar texto", tint = Virgil.colors.textSecondary) }
             }
+            speech?.let { VoiceNotice(it) }
         }
+    }
+}
+
+/** Estado e ações de voz exibidos no cartão (a pronúncia não depende do modelo de tradução). */
+internal data class SpeechControls(
+    val playing: Boolean,
+    val availability: VoiceAvailability,
+    val languageName: String,
+    val onPlay: () -> Unit,
+    val onInstallVoice: () -> Unit,
+)
+
+@Composable
+private fun IpaLine(ipa: IpaUi) {
+    when (ipa) {
+        is IpaUi.Found -> Row(verticalAlignment = Alignment.Bottom) {
+            Text(ipa.ipa, style = IpaStyle, color = Virgil.colors.textSecondary)
+            ipa.note?.let {
+                Spacer(Modifier.size(Spacing.sm))
+                Text(it, style = MaterialTheme.typography.labelSmall, color = Virgil.colors.textSecondary, modifier = Modifier.padding(bottom = 3.dp))
+            }
+        }
+        // Sem entrada no dicionário: nada é exibido (o Virgil não inventa transcrições).
+        IpaUi.Loading, IpaUi.Missing -> Unit
+    }
+}
+
+@Composable
+private fun VoiceNotice(s: SpeechControls) {
+    val msg = when (s.availability) {
+        VoiceAvailability.Ready -> return
+        VoiceAvailability.MissingData -> "A voz em ${s.languageName} não está instalada neste aparelho."
+        VoiceAvailability.NotSupported -> "O mecanismo de voz do aparelho não oferece ${s.languageName}."
+        VoiceAvailability.Unavailable -> "Mecanismo de voz do Android indisponível ou ainda iniciando."
+    }
+    Row(Modifier.padding(start = Spacing.md, end = Spacing.lg), verticalAlignment = Alignment.CenterVertically) {
+        Text(msg, style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary, modifier = Modifier.weight(1f))
+        if (s.availability != VoiceAvailability.Unavailable) TextButton(onClick = s.onInstallVoice) { Text("Instalar voz") }
     }
 }
 

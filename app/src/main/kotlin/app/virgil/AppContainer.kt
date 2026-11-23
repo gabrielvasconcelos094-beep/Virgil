@@ -49,4 +49,8 @@ class AppContainer(context: Context) {
     val translator by translatorLazy
     /** Evita criar o motor só para responder a onTrimMemory. */
     val translatorIfCreated: LocalTranslationEngine? get() = if (translatorLazy.isInitialized()) translator else null
+    /** Voz do sistema (TextToSpeech); criada na primeira tela que precisa dela. */
+    val speech by lazy { app.virgil.engine.speech.AndroidSpeechEngine(appContext) }
+    /** Léxicos IPA offline (assets), carregados por idioma sob demanda. */
+    val ipa by lazy { app.virgil.engine.speech.AssetIpaSource(appContext) }
 }

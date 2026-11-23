@@ -33,6 +33,7 @@ include(":engine:llama")
 include(":engine:translation")
 include(":engine:analysis")
 include(":engine:srs")
+include(":engine:speech")
 
 // Funcionalidades (uma por área de navegação)
 include(":feature:library")

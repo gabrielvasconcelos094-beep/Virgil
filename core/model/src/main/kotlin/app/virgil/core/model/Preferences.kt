@@ -40,4 +40,17 @@ data class AppPreferences(
     val widgetShowExample: Boolean = true,
     val dailyReviewLimit: Int = 40,
     val onboardingDone: Boolean = false,
+    val speech: SpeechPreferences = SpeechPreferences(),
+)
+
+/**
+ * Pronúncia. [rate] é a velocidade relativa (1 = normal) usada no cartão de consulta e nos modos
+ * de frase/parágrafo. [voices] guarda a voz escolhida por idioma (ISO 639-1 → id da voz do sistema);
+ * sem escolha, o Virgil usa a melhor voz offline da variante certa.
+ */
+data class SpeechPreferences(
+    val autoPlay: Boolean = true,
+    val showIpa: Boolean = true,
+    val rate: Float = 0.9f,
+    val voices: Map<String, String> = emptyMap(),
 )

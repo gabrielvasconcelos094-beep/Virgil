@@ -162,8 +162,32 @@ class ReaderTest {
         override fun release() {}
     }
 
+    /** Voz de teste: registra a ordem dos eventos (fala antes da tradução). */
+    private class FakeSpeech(private val log: MutableList<String>) : app.virgil.engine.speech.SpeechEngine {
+        override val ready = MutableStateFlow(true)
+        override val speaking = MutableStateFlow<String?>(null)
+        val spoken = mutableListOf<Pair<String, Language>>()
+        override fun availability(language: Language) = app.virgil.engine.speech.VoiceAvailability.Ready
+        override fun voices(language: Language) = emptyList<app.virgil.engine.speech.VoiceOption>()
+        override fun speak(text: String, language: Language, rate: Float, voiceId: String?, id: String) {
+            log += "fala:$text"; spoken += text to language; speaking.value = id
+        }
+        override fun stop() { speaking.value = null }
+        override fun shutdown() {}
+    }
+
     @Test fun traducaoApareceNoCartaoESalvaAutomaticamente() {
-        val fake = FakeTranslator()
+        val log = java.util.Collections.synchronizedList(mutableListOf<String>())
+        val fake = object : Translator by FakeTranslator() {
+            override fun translate(request: TranslationRequest) = flow {
+                log += "traducao:${request.text}"
+                emit(TranslationEvent.Started)
+                kotlinx.coroutines.delay(300)
+                emit(TranslationEvent.Done("respondeu", fromCache = false, millis = 300))
+            }
+        }
+        val speech = FakeSpeech(log)
+        val ipa = app.virgil.engine.speech.AssetIpaSource(ApplicationProvider.getApplicationContext())
         compose.setContent {
             VirgilTheme(ThemeMode.Light) {
                 Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -171,6 +195,7 @@ class ReaderTest {
                         bookId = bookId, store = BookStore(db, files), vocabulary = VocabularyRepository(db),
                         preferences = PreferencesRepository(PreferencesStore(ApplicationProvider.getApplicationContext())),
                         translator = fake, imageRoot = { File(files.root, it).absolutePath }, onBack = {}, onOpenTranslationSettings = {},
+                        speech = speech, ipa = ipa,
                     )
                 }
             }
@@ -179,13 +204,20 @@ class ReaderTest {
         compose.onNodeWithText("Mr. Bennet replied that he had not.").performTouchInput {
             click(androidx.compose.ui.geometry.Offset(width * 0.42f, height / 2f))
         }
+        // Ordem: cartão com a palavra → áudio já pedido → IPA do léxico → tradução quando pronta.
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("/ɹɪˈplaɪd/").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Parar").assertIsDisplayed()     // tocando
         compose.waitUntil(5_000) { compose.onAllNodesWithText("respondeu").fetchSemanticsNodes().isNotEmpty() }
         compose.waitUntil(5_000) { compose.onAllNodesWithText("No vocabulário").fetchSemanticsNodes().isNotEmpty() }
         compose.onRoot().captureRoboImage("build/outputs/roborazzi/leitor-traducao.png")
-        val req = fake.requests.single()
-        assertThat(req.text).isEqualTo("replied")
-        assertThat(req.context).isEqualTo("Mr. Bennet replied that he had not.")
-        assertThat(req.language).isEqualTo(Language.EN_GB)
+        assertThat(speech.spoken.first()).isEqualTo("replied" to Language.EN_GB)
+        assertThat(log.indexOf("fala:replied")).isLessThan(log.indexOf("traducao:replied"))
+        // Repetir: parar e tocar de novo.
+        compose.onNodeWithText("Parar").performTouchInput { click() }
+        compose.waitUntil(2_000) { compose.onAllNodesWithText("Ouvir").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Ouvir").performTouchInput { click() }
+        compose.waitForIdle()
+        assertThat(speech.spoken).hasSize(2)
         val saved = runBlocking { db.vocabulary().observe(null, null, null, null, null).first() }
         assertThat(saved.single().translation).isEqualTo("respondeu")
     }
