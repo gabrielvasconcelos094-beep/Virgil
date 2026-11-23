@@ -29,7 +29,16 @@
         engine:books (F2): EPUB/TXT → modelo de blocos → arquivos privados
         engine:models (F3): catálogo, download retomável, SHA-256, remoção
         engine:srs (F5): FSRS
+        engine:speech (0.2): TextToSpeech do Android + léxicos IPA offline (Wiktionary)
 ```
+
+## Consulta de palavra a partir da 0.2
+
+Toque → cartão aparece com a palavra → a voz do Android fala a palavra (independe do modelo) →
+o IPA vem do léxico do idioma (já em memória desde a abertura do livro) → a tradução chega quando
+o modelo responde. O modelo é aquecido ao abrir o leitor. Os modos Frase/Parágrafo
+(`StudyViewModel`) usam os mesmos serviços; só a unidade visível é traduzida, e a seguinte é
+pré-traduzida.
 
 ## Fluxo de uma consulta de palavra (Fase 3)
 
@@ -77,6 +86,7 @@ limite de tokens proporcional à entrada.
 | 1 | Estrutura, tema, tipografia, navegação, Room, DataStore | concluída |
 | 2 | Importação EPUB/TXT, biblioteca, leitor, posição, seleção | concluída |
 | 3 | llama.cpp via JNI, gerenciamento do modelo, tradução, cache | concluída (medições no aparelho pendentes) |
-| 4 | Idioma/variante, análise CEFR por capítulo, perfil do leitor | concluída (calibração pendente) |
+| 4 | Idioma/variante, análise CEFR por capítulo, perfil do leitor | concluída (calibrada na 0.2) |
 | 5 | Vocabulário a partir do leitor, FSRS, widget, estatísticas | concluída |
 | 6 | Polimento, verificação, testes de ponta a ponta, APK de release | concluída |
+| 0.2 | Pronúncia, IPA, modos Frase/Parágrafo, latência da tradução, CEFR v2 | concluída (medições no aparelho pendentes) |

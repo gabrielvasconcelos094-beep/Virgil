@@ -5,7 +5,7 @@ no aparelho**: consulta de palavras em contexto, tradução de frases e parágra
 dificuldade (CEFR) por livro e por capítulo, vocabulário pessoal e revisão espaçada.
 
 Sem conta, sem assinatura, sem anúncios, sem nuvem. A internet só é usada para baixar, uma vez, o
-modelo de tradução.
+modelo de tradução (e, se o usuário quiser, vozes do próprio Android).
 
 Idiomas: inglês britânico, francês, alemão, italiano e espanhol europeu → português brasileiro.
 Livros em português também podem ser lidos.
@@ -18,9 +18,10 @@ Livros em português também podem ser lidos.
 | 1 | Projeto multi-módulo, identidade visual, tema claro/escuro, tipografia, navegação, Room, DataStore | ✅ |
 | 2 | Importação EPUB/TXT, biblioteca, leitor, seleção de palavras | ✅ |
 | 3 | Motor de tradução local (llama.cpp + modelo único) | ✅ (falta medir no aparelho) |
-| 4 | Análise de dificuldade CEFR | ✅ (calibração pendente) |
+| 4 | Análise de dificuldade CEFR | ✅ (calibrada na 0.2) |
 | 5 | Vocabulário a partir do leitor, revisão FSRS, widget, estatísticas | ✅ |
 | 6 | Polimento, verificação, testes de ponta a ponta, APK | ✅ (medições no aparelho pendentes) |
+| 0.2 | Pronúncia, IPA, modos Frase/Parágrafo, velocidade da tradução, CEFR calibrado | ✅ ([relatório](docs/entrega-0.2.md)) |
 
 O que já funciona de verdade nesta versão:
 
@@ -33,10 +34,16 @@ O que já funciona de verdade nesta versão:
 - **Seleção:** toque = palavra (com elisões do francês/italiano), pressão longa + arraste =
   expressão, e expansão para frase ou parágrafo no cartão de consulta; salvar no vocabulário com a
   frase original, o livro e o capítulo.
-- **Dificuldade estimada (CEFR):** análise determinística em segundo plano após a importação
-  (vocabulário por cobertura de frequência, sintaxe, formas verbais literárias por idioma, estilo,
-  variante linguística), faixa por livro e por capítulo, observações em português, comparação com o
-  nível declarado pelo leitor. Apresentada como estimativa preliminar até a calibração.
+- **Pronúncia e IPA:** ao tocar numa palavra, ela é pronunciada pela voz do Android na variante do
+  livro (inglês britânico, espanhol da Espanha…), com a transcrição fonética do Wiktionary
+  (/ˈwɔː.tə/), sem depender do modelo de tradução; Ouvir/Parar; voz e velocidade por idioma.
+- **Modos Frase a frase e Parágrafo a parágrafo:** uma unidade por vez com a tradução abaixo
+  (ocultável), ouvir e repetir, velocidade, posição "n / total", palavras tocáveis; tradução
+  progressiva com pré-tradução só da unidade seguinte.
+- **Dificuldade estimada (CEFR):** análise em segundo plano após a importação, com 21
+  características (léxico, sintaxe, gramática, expressões e estilo) e modelo calibrado em textos de
+  nível conhecido (44% de acerto exato, 90,5% a ±1 nível na validação cruzada), faixa por livro e
+  por capítulo, confiança medida e comparação com o nível declarado pelo leitor.
 - **Revisão espaçada (FSRS-5):** palavras vencidas + até 15 novas por dia, sempre com a frase do
   livro; respostas Esqueci/Difícil/Bom/Fácil com o próximo intervalo visível; palavras com memória
   estável (≥ 90 dias) passam a "aprendidas".
@@ -54,8 +61,8 @@ O que já funciona de verdade nesta versão:
 
 ## Instalação
 
-1. Baixe o APK (`app/build/outputs/apk/release/app-release.apk` após compilar, ou o arquivo
-   entregue junto com esta versão) para o celular Android (9 ou superior, ARM64).
+1. Baixe o APK (`dist/Virgil-0.2.0.apk`, ou `app/build/outputs/apk/release/app-release.apk` após
+   compilar) para o celular Android (9 ou superior, ARM64).
 2. Abra o arquivo e permita "instalar apps desta fonte" quando o Android pedir.
 3. Abra o Virgil. Em **Configurações → Tradução**, baixe o modelo recomendado para o seu aparelho
    (TranslateGemma 4B, 2,49 GB, para 6 GB de RAM ou mais; Hy-MT2 1.8B, 1,13 GB, para 4 GB). Por
@@ -72,9 +79,11 @@ O que já funciona de verdade nesta versão:
   tipográfica) e, em segundo plano, recebe a estimativa de dificuldade.
 - **Ler:** toque na capa. Toque no centro da página para mostrar/ocultar os controles (sumário,
   marcadores, capítulos, **Aa** para fonte, tamanho, entrelinha, margens, alinhamento e tema).
-- **Consultar:** toque numa palavra para a tradução em contexto; pressione e arraste para selecionar
+- **Consultar:** toque numa palavra para ouvi-la, ver o IPA e a tradução em contexto; pressione e arraste para selecionar
   uma expressão; no cartão, escolha **Frase** ou **Parágrafo** para traduções maiores. As palavras
   consultadas vão para o vocabulário automaticamente (desative em Configurações).
+- **Estudar frase a frase:** no leitor, toque no centro da página e use o ícone de tradução da
+  barra superior (Frase a frase / Parágrafo a parágrafo). Ao sair, o leitor continua dali.
 - **Dificuldade:** pressione a capa e escolha **Sobre o livro e dificuldade** (ou o ícone ⓘ no
   leitor). Informe seu nível em cada idioma em Configurações → Seus níveis para ver a comparação.
 - **Revisar:** a aba Revisar mostra as palavras do dia; tente lembrar, revele e avalie
@@ -87,21 +96,24 @@ Detalhes e justificativas em [docs/entrega.md](docs/entrega.md).
 
 - Medições no celular (latência, memória, bateria, partida a frio do modelo) — não há aparelho
   neste ambiente de desenvolvimento.
-- Calibração da estimativa CEFR com textos de nível conhecido (hoje: "estimativa preliminar").
+- Voz neural offline: avaliada e não integrada (licença GPL do espeak-ng; ver ADR-0007).
+- IPA: inglês 94% das palavras dos livros testados; alemão 75%, português 69% (formas flexionadas).
 - Modo paginado (o leitor usa rolagem por capítulo); notas de rodapé não abrem em pop-up.
 - Tradução da frase de contexto ao salvar uma palavra (a ficha guarda a frase original).
 - Exportação/backup manual do vocabulário; keystore de release.
 
 ## Documentação
 
-- [Relatório de entrega](docs/entrega.md) — o que foi feito, verificado e o que falta
+- [Relatório da versão 0.2](docs/entrega-0.2.md) — pronúncia, IPA, modos de estudo, latência, CEFR
+- [Relatório de entrega 0.1](docs/entrega.md) — o que foi feito, verificado e o que falta
+- [Diagnóstico da análise CEFR](docs/cefr-diagnostico.md) · [Latência da tradução](docs/benchmark/2026-11-latencia.md)
 
 - [Arquitetura e análise técnica](docs/arquitetura.md) — princípios, fluxo de consulta, política de memória, riscos
 - [Benchmark de tradução (nov/2026)](docs/benchmark/2026-11-traducao.md) — medições reais de 3 modelos
 - Decisões (ADR): [modelo de tradução](docs/adr/0001-modelo-de-traducao.md) ·
   [runtime](docs/adr/0002-runtime-de-inferencia.md) · [EPUB](docs/adr/0003-renderizacao-epub.md) ·
   [dificuldade CEFR](docs/adr/0004-analise-de-dificuldade.md) · [repetição espaçada](docs/adr/0005-repeticao-espacada.md) ·
-  [stack e módulos](docs/adr/0006-stack-e-modulos.md)
+  [stack e módulos](docs/adr/0006-stack-e-modulos.md) · [voz neural offline](docs/adr/0007-voz-neural-offline.md)
 - [Identidade visual](docs/design/identidade-visual.md)
 
 ## Compilar
@@ -138,8 +150,11 @@ core/designsystem    Cores, tipografia (Literata, Source Serif 4, EB Garamond, I
 core/database        Room: 15 entidades, DAOs, esquema exportado em core/database/schemas
 core/datastore       Preferências
 core/data            Repositórios
-feature/*            Biblioteca, Vocabulário, Revisar, Progresso, Configurações
+engine/speech        Voz do Android e léxicos IPA (assets/ipa)
+feature/*            Biblioteca, Leitor (e modos Frase/Parágrafo), Vocabulário, Revisar, Progresso, Configurações
 tools/mt-benchmark   Harness e conjunto de testes usados para escolher o modelo de tradução
+tools/cefr-calibration  Calibração do modelo CEFR · tools/ipa-lexicon  geração dos léxicos IPA
+tools/tts-eval       Avaliação de vozes neurais (ADR-0007)
 docs/                Arquitetura, ADRs, benchmark, design, licenças das fontes
 ```
 
