@@ -160,11 +160,22 @@ class ReaderViewModel(
             sessionStartChars = currentGlobalChars()
             sessionMaxChars = sessionStartChars
         }
+        // Voltando do modo frase/parágrafo: continua de onde o estudo parou.
+        viewModelScope.launch {
+            StudyHandoff.position.filterNotNull().collect { p ->
+                if (p.bookId != bookId) return@collect
+                StudyHandoff.position.value = null
+                awaitOpened()
+                goToChapter(p.chapterIndex, p.offset)
+            }
+        }
         // Salva a posição pouco depois de a rolagem parar (e não a cada quadro).
         viewModelScope.launch {
             visible.filterNotNull().debounce(1_200).collect { (c, o) -> opened?.let { store.savePosition(it, c, o) } }
         }
     }
+
+    private suspend fun awaitOpened() { while (opened == null && _state.value.error == null) kotlinx.coroutines.delay(20) }
 
     // ------------------------------------------------------------------ capítulos
 

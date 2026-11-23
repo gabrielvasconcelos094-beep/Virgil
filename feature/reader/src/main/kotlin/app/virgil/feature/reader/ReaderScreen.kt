@@ -42,6 +42,7 @@ import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -107,6 +108,8 @@ fun ReaderRoute(
     onBookDetails: () -> Unit = {},
     speech: app.virgil.engine.speech.SpeechEngine? = null,
     ipa: app.virgil.engine.speech.IpaSource? = null,
+    /** Abre o modo frase/parágrafo na posição atual (capítulo, offset). */
+    onStudy: ((StudyMode, Int, Int) -> Unit)? = null,
 ) {
     val vm: ReaderViewModel = viewModel(key = "reader-$bookId", factory = viewModelFactory { initializer { ReaderViewModel(bookId, store, vocabulary, preferences, translator, speech, ipa) } })
     val state by vm.state.collectAsStateWithLifecycle()
@@ -139,6 +142,10 @@ fun ReaderRoute(
         onOpenTranslationSettings = onOpenTranslationSettings,
         onBookDetails = onBookDetails,
         theme = p.theme,
+        onStudy = onStudy?.let { open -> { mode: StudyMode ->
+            val (c, o) = vm.currentPosition() ?: (state.chapterIndex to 0)
+            vm.hideControls(); open(mode, c, o)
+        } },
     )
 }
 
@@ -157,6 +164,7 @@ private fun ReaderScreen(
     onOpenTranslationSettings: () -> Unit,
     onBookDetails: () -> Unit,
     theme: app.virgil.core.model.ThemeMode,
+    onStudy: ((StudyMode) -> Unit)? = null,
 ) {
     var sheet by rememberSaveable { mutableStateOf<String?>(null) } // "toc" | "type"
     val listState = rememberLazyListState()
@@ -236,7 +244,7 @@ private fun ReaderScreen(
         }
 
         AnimatedVisibility(state.controlsVisible, enter = fadeIn(tween(160)), exit = fadeOut(tween(120)), modifier = Modifier.align(Alignment.TopCenter)) {
-            TopControls(state, bookmarked, onBack, onToc = { sheet = "toc" }, onBookmark = vm::toggleBookmarkHere, onInfo = onBookDetails)
+            TopControls(state, bookmarked, onBack, onToc = { sheet = "toc" }, onBookmark = vm::toggleBookmarkHere, onInfo = onBookDetails, onStudy = onStudy)
         }
         AnimatedVisibility(state.controlsVisible, enter = fadeIn(tween(160)), exit = fadeOut(tween(120)), modifier = Modifier.align(Alignment.BottomCenter)) {
             BottomControls(state, onPrev = vm::previousChapter, onNext = vm::nextChapter, onType = { sheet = "type" })
@@ -276,7 +284,8 @@ private fun ReaderScreen(
 }
 
 @Composable
-private fun TopControls(state: ReaderUiState, bookmarked: Boolean, onBack: () -> Unit, onToc: () -> Unit, onBookmark: () -> Unit, onInfo: () -> Unit) {
+private fun TopControls(state: ReaderUiState, bookmarked: Boolean, onBack: () -> Unit, onToc: () -> Unit, onBookmark: () -> Unit, onInfo: () -> Unit, onStudy: ((StudyMode) -> Unit)? = null) {
+    var studyMenu by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().background(Virgil.colors.background.copy(alpha = 0.97f)).statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = Spacing.xs, vertical = Spacing.xs), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Voltar à biblioteca") }
@@ -286,6 +295,21 @@ private fun TopControls(state: ReaderUiState, bookmarked: Boolean, onBack: () ->
             }
             IconButton(onClick = onBookmark) {
                 Icon(if (bookmarked) Icons.Outlined.Bookmark else Icons.Outlined.BookmarkBorder, if (bookmarked) "Remover marcador" else "Marcar esta página", tint = if (bookmarked) Virgil.colors.accent else Virgil.colors.textPrimary)
+            }
+            if (onStudy != null) {
+                Box {
+                    IconButton(onClick = { studyMenu = true }) { Icon(Icons.Outlined.Translate, "Modos de estudo: frase a frase ou parágrafo a parágrafo") }
+                    androidx.compose.material3.DropdownMenu(expanded = studyMenu, onDismissRequest = { studyMenu = false }, containerColor = Virgil.colors.surfaceRaised) {
+                        androidx.compose.material3.DropdownMenuItem(
+                            text = { Column { Text("Frase a frase"); Text("Uma frase por vez, com a tradução abaixo", style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary) } },
+                            onClick = { studyMenu = false; onStudy(StudyMode.Sentence) },
+                        )
+                        androidx.compose.material3.DropdownMenuItem(
+                            text = { Column { Text("Parágrafo a parágrafo"); Text("Tradução com o contexto do parágrafo inteiro", style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary) } },
+                            onClick = { studyMenu = false; onStudy(StudyMode.Paragraph) },
+                        )
+                    }
+                }
             }
             IconButton(onClick = onInfo) { Icon(Icons.Outlined.Info, "Sobre o livro e dificuldade") }
             IconButton(onClick = onToc) { Icon(Icons.AutoMirrored.Outlined.List, "Sumário e marcadores") }

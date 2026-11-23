@@ -76,11 +76,13 @@ class TextSegmenter(private val language: Language) {
             start = end
             end = it.next()
         }
-        // Junta quebras falsas após abreviações e iniciais.
+        // Junta quebras falsas: abreviações e iniciais; aspas de fechamento coladas ("du?“");
+        // continuação em minúscula de diálogo ("» dit-il", "—preguntó él", "” cried she", "... and");
+        // interjeição curta dentro de aspas abertas ("“Oh! Single…”").
         val merged = ArrayList<IntRange>()
         for (r in raw) {
             val prev = merged.lastOrNull()
-            if (prev != null && endsWithAbbreviation(text.substring(prev.first, prev.last + 1))) {
+            if (prev != null && shouldJoin(text, prev, r)) {
                 merged[merged.size - 1] = prev.first..r.last
             } else {
                 merged += r
@@ -88,6 +90,25 @@ class TextSegmenter(private val language: Language) {
         }
         return merged.mapNotNull { trim(text, it) }
     }
+
+    private fun shouldJoin(text: String, prev: IntRange, next: IntRange): Boolean {
+        val p = text.substring(prev.first, prev.last + 1)
+        if (endsWithAbbreviation(p)) return true
+        val n = text.substring(next.first, next.last + 1)
+        // A quebra caiu antes de uma aspa colada ao fim da frase anterior: a aspa fecha a anterior.
+        if (n.isNotEmpty() && n[0] in QUOTES && p.isNotEmpty() && !p.last().isWhitespace()) return true
+        // Próxima "frase" começa (depois de aspas, travessões e espaços) com minúscula: é continuação.
+        val firstLetter = n.firstOrNull { it.isLetterOrDigit() }
+        if (firstLetter != null && firstLetter.isLowerCase()) return true
+        // Interjeição curta logo após abrir aspas ("“Oh!", "«Ah !") ainda sem fechar.
+        val words = p.trim().split(Regex("\\s+")).size
+        if (words <= 2 && openQuotes(p) > 0) return true
+        return false
+    }
+
+    /** Aspas abertas e não fechadas (aproximação: no alemão „…“ conta como aberta, o que só afeta frases de ≤ 2 palavras). */
+    private fun openQuotes(s: String): Int =
+        s.count { it == '“' || it == '«' || it == '„' } - s.count { it == '”' || it == '»' }
 
     /** Frase que contém o intervalo [start, end). Se o intervalo atravessar frases, devolve a união. */
     fun sentenceAround(text: String, start: Int, end: Int = start + 1): IntRange {
@@ -137,6 +158,8 @@ class TextSegmenter(private val language: Language) {
         )
 
         private fun elidedPrefixes(l: Language) = if (l == Language.FR) ELIDED_FR else ELIDED_IT
+
+        private val QUOTES = setOf('”', '“', '»', '«', '’', '"', '\'')
 
         private val COMMON = setOf("etc", "p", "pp", "cf", "vol", "nr", "no", "n", "ca")
 

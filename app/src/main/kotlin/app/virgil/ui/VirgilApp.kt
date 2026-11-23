@@ -56,6 +56,7 @@ import kotlin.reflect.KClass
 @Serializable object SettingsDest
 @Serializable object LicensesDest
 @Serializable object SpeechDest
+@Serializable data class StudyDest(val bookId: Long, val mode: String, val chapter: Int, val offset: Int)
 @Serializable object TranslationDest
 @Serializable data class BookDetailsDest(val bookId: Long)
 @Serializable data class ReaderDest(val bookId: Long)
@@ -166,6 +167,7 @@ fun VirgilApp(container: AppContainer, openEntryId: Long? = null, onEntryOpened:
                     translator = container.translator,
                     speech = container.speech,
                     ipa = container.ipa,
+                    onStudy = { mode, c, o -> nav.navigate(StudyDest(dest.bookId, mode.name, c, o)) },
                     imageRoot = { rel -> java.io.File(container.booksRoot, rel).absolutePath },
                     onBack = { nav.popBackStack() },
                     onOpenTranslationSettings = { nav.navigate(TranslationDest) },
@@ -184,6 +186,15 @@ fun VirgilApp(container: AppContainer, openEntryId: Long? = null, onEntryOpened:
             }
             composable<TranslationDest> {
                 SafeArea(includeBottom = true) { TranslationModelRoute(container.models, container.translator, onBack = { nav.popBackStack() }) }
+            }
+            composable<StudyDest> { entry ->
+                val d = entry.toRoute<StudyDest>()
+                app.virgil.feature.reader.StudyRoute(
+                    bookId = d.bookId, mode = app.virgil.feature.reader.StudyMode.valueOf(d.mode), startChapter = d.chapter, startOffset = d.offset,
+                    store = container.bookStore, vocabulary = container.vocabulary, preferences = container.preferences,
+                    translator = container.translator, speech = container.speech, ipa = container.ipa,
+                    onClose = { nav.popBackStack() }, onOpenTranslationSettings = { nav.navigate(TranslationDest) },
+                )
             }
             composable<SpeechDest> {
                 SafeArea(includeBottom = true) {

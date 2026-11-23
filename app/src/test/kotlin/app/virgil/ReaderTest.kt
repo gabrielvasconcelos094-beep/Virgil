@@ -222,6 +222,105 @@ class ReaderTest {
         assertThat(saved.single().translation).isEqualTo("respondeu")
     }
 
+    /** Tradutor que devolve "[pt] texto" e registra os pedidos (para verificar pré-tradução e contexto). */
+    private class EchoTranslator : Translator {
+        override val status = MutableStateFlow<EngineStatus>(EngineStatus.Ready(ModelCatalog.TranslateGemma4B))
+        val requests = java.util.Collections.synchronizedList(mutableListOf<TranslationRequest>())
+        override fun translate(request: TranslationRequest) = flow {
+            requests += request
+            emit(TranslationEvent.Started)
+            val out = if (request.kind == app.virgil.core.model.SelectionKind.Word) "respondeu" else "[pt] " + request.text
+            emit(TranslationEvent.Done(out, fromCache = false, millis = 10))
+        }
+        override fun release() {}
+    }
+
+    @Test fun modoFraseNavegaTraduzPreBuscaESalva() {
+        val ctx = ApplicationProvider.getApplicationContext<Context>()
+        val store = BookStore(db, files)
+        val doc = runBlocking { store.chapter(db.books().get(bookId)!!, db.books().chapters(bookId)[0]) }
+        val block = doc.blocks.first { it.text == "Mr. Bennet replied that he had not." }
+        val tr = EchoTranslator()
+        val log = java.util.Collections.synchronizedList(mutableListOf<String>())
+        val speech = FakeSpeech(log)
+        val vm = app.virgil.feature.reader.StudyViewModel(
+            bookId, app.virgil.feature.reader.StudyMode.Sentence, 0, block.start, store, VocabularyRepository(db),
+            PreferencesRepository(PreferencesStore(ctx)), tr, speech, app.virgil.engine.speech.AssetIpaSource(ctx),
+        )
+        awaitMain { vm.state.value.unit?.text == "Mr. Bennet replied that he had not." }
+        awaitMain { vm.state.value.translation is app.virgil.feature.reader.TranslationUi.Ready }
+        assertThat((vm.state.value.translation as app.virgil.feature.reader.TranslationUi.Ready).text).isEqualTo("[pt] Mr. Bennet replied that he had not.")
+        // Pré-tradução apenas da unidade seguinte (nunca do livro inteiro)
+        awaitMain { tr.requests.size >= 2 }
+        org.robolectric.shadows.ShadowLooper.idleMainLooper()
+        assertThat(tr.requests.map { it.text }).containsExactly(
+            "Mr. Bennet replied that he had not.",
+            "“But it is,” returned she; “for Mrs. Long has just been here, and she told me all about it.”",
+        ).inOrder()
+        assertThat(tr.requests.all { it.kind == app.virgil.core.model.SelectionKind.Sentence }).isTrue()
+        val total = vm.state.value.units.size
+        println("modo frase: unidade ${vm.state.value.index + 1} de $total")
+        assertThat(total).isGreaterThan(15)
+
+        // Próxima: já está no cache da sessão, sem novo pedido para ela
+        vm.next()
+        awaitMain { vm.state.value.translation is app.virgil.feature.reader.TranslationUi.Ready && vm.state.value.unit!!.text.startsWith("“But it is,”") }
+        assertThat(tr.requests.count { it.text.startsWith("“But it is,”") }).isEqualTo(1)
+
+        // Ouvir a frase; tocar na palavra "returned" (IPA, voz, tradução em contexto) e salvar com a tradução da frase
+        vm.speakUnit()
+        assertThat(speech.spoken.last().first).startsWith("“But it is,”")
+        val unit = vm.state.value.unit!!
+        vm.tapWord(unit.text.indexOf("returned") + 2)
+        awaitMain { (vm.state.value.lookup?.ipa as? app.virgil.feature.reader.IpaUi.Found) != null && vm.state.value.lookup?.translation is app.virgil.feature.reader.TranslationUi.Ready }
+        assertThat((vm.state.value.lookup!!.ipa as app.virgil.feature.reader.IpaUi.Found).ipa).isEqualTo("/ɹɪˈtəːnd/")
+        assertThat(speech.spoken.last().first).isEqualTo("returned")
+        val wordReq = tr.requests.last()
+        assertThat(wordReq.kind).isEqualTo(app.virgil.core.model.SelectionKind.Word)
+        assertThat(wordReq.context).isEqualTo(unit.text)
+        vm.saveWord()
+        awaitMain { runBlocking { db.vocabulary().observe(null, null, null, null, null).first() }.any { it.term == "returned" } }
+        val saved = runBlocking { db.vocabulary().observe(null, null, null, null, null).first() }.first { it.term == "returned" }
+        assertThat(saved.context_sentence).isEqualTo(unit.text)
+        assertThat(saved.context_translation).isEqualTo("[pt] " + unit.text)
+
+        // Anterior volta; sair entrega a posição ao leitor
+        vm.closeLookup()
+        vm.previous()
+        awaitMain { vm.state.value.unit?.text == "Mr. Bennet replied that he had not." }
+        awaitMain { vm.currentPosition() != null && vm.currentPosition()!!.second == block.start }
+        vm.leave()
+        assertThat(app.virgil.feature.reader.StudyHandoff.position.value).isEqualTo(app.virgil.feature.reader.StudyHandoff.Position(bookId, 0, block.start))
+        app.virgil.feature.reader.StudyHandoff.position.value = null
+    }
+
+    @Test fun modoParagrafoUsaParagrafoInteiroEMostraTela() {
+        val ctx = ApplicationProvider.getApplicationContext<Context>()
+        val tr = EchoTranslator()
+        val prefs = PreferencesRepository(PreferencesStore(ctx))
+        compose.setContent {
+            VirgilTheme(ThemeMode.Light) {
+                app.virgil.feature.reader.StudyRoute(
+                    bookId = bookId, mode = app.virgil.feature.reader.StudyMode.Paragraph, startChapter = 0, startOffset = 0,
+                    store = BookStore(db, files), vocabulary = VocabularyRepository(db), preferences = prefs,
+                    translator = tr, speech = FakeSpeech(mutableListOf()), ipa = null, onClose = {}, onOpenTranslationSettings = {},
+                )
+            }
+        }
+        compose.waitUntil(10_000) { compose.onAllNodesWithText("[pt] Chapter I").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("1 / ", substring = true).assertIsDisplayed()
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Próximo parágrafo")).performTouchInput { click() }
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("[pt] " + chapter1[0]).fetchSemanticsNodes().isNotEmpty() }
+        compose.onRoot().captureRoboImage("build/outputs/roborazzi/modo-paragrafo.png")
+        assertThat(tr.requests.first { it.text == chapter1[0] }.kind).isEqualTo(app.virgil.core.model.SelectionKind.Paragraph)
+        // Ocultar e revelar a tradução
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("Ocultar tradução")).performTouchInput { click() }
+        compose.waitUntil(2_000) { compose.onAllNodesWithText("Mostrar tradução").fetchSemanticsNodes().isNotEmpty() }
+        assertThat(compose.onAllNodesWithText("[pt] " + chapter1[0]).fetchSemanticsNodes()).isEmpty()
+        compose.onNodeWithText("Mostrar tradução").performTouchInput { click() }
+        compose.waitUntil(2_000) { compose.onAllNodesWithText("[pt] " + chapter1[0]).fetchSemanticsNodes().isNotEmpty() }
+    }
+
     /** Avança o looper principal do Robolectric até a condição valer (view models fora de composição). */
     private fun awaitMain(condition: () -> Boolean) {
         val deadline = System.currentTimeMillis() + 10_000

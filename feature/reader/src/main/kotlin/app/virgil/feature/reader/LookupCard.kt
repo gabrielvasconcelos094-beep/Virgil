@@ -57,6 +57,8 @@ internal fun LookupCard(
     onClose: () -> Unit,
     onOpenSettings: () -> Unit,
     speech: SpeechControls? = null,
+    /** Nos modos frase/parágrafo a unidade já está na tela: só a palavra é consultada. */
+    showKinds: Boolean = true,
 ) {
     val clipboard = LocalClipboardManager.current
     val isTerm = l.selection.kind == SelectionKind.Word || l.selection.kind == SelectionKind.Expression
@@ -69,9 +71,11 @@ internal fun LookupCard(
         Column(Modifier.navigationBarsPadding().padding(start = Spacing.xl, end = Spacing.xs, top = Spacing.sm, bottom = Spacing.md)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                    QuietChip(if (l.selection.kind == SelectionKind.Expression) "Expressão" else "Palavra", isTerm) { onKind(SelectionKind.Word) }
-                    QuietChip("Frase", l.selection.kind == SelectionKind.Sentence) { onKind(SelectionKind.Sentence) }
-                    QuietChip("Parágrafo", l.selection.kind == SelectionKind.Paragraph) { onKind(SelectionKind.Paragraph) }
+                    if (showKinds) {
+                        QuietChip(if (l.selection.kind == SelectionKind.Expression) "Expressão" else "Palavra", isTerm) { onKind(SelectionKind.Word) }
+                        QuietChip("Frase", l.selection.kind == SelectionKind.Sentence) { onKind(SelectionKind.Sentence) }
+                        QuietChip("Parágrafo", l.selection.kind == SelectionKind.Paragraph) { onKind(SelectionKind.Paragraph) }
+                    }
                 }
                 IconButton(onClick = onClose) { Icon(Icons.Outlined.Close, "Fechar", tint = Virgil.colors.textSecondary) }
             }
