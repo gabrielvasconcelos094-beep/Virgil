@@ -75,11 +75,16 @@ fun BookDetailsScreen(d: BookDetails, onBack: () -> Unit, onRead: () -> Unit, on
                 Row(Modifier.padding(horizontal = Spacing.screen), verticalAlignment = Alignment.Bottom) {
                     Text(d.range!!.label, style = MaterialTheme.typography.displaySmall, color = Virgil.colors.primary)
                     Spacer(Modifier.width(Spacing.md))
-                    Text(confidenceLabel(d.range!!.confidence), style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary, modifier = Modifier.padding(bottom = 6.dp))
+                    Text("faixa estimada · mais provável: ${app.virgil.engine.analysis.DifficultyAnalyzer.levelOf(d.metrics?.scores?.combined ?: 3.0).label}", style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary, modifier = Modifier.padding(bottom = 6.dp))
+                }
+                d.metrics?.summary?.takeIf { it.isNotBlank() }?.let {
+                    Text(it, style = MaterialTheme.typography.bodyMedium, color = Virgil.colors.textPrimary, modifier = Modifier.padding(horizontal = Spacing.screen, vertical = Spacing.xs))
                 }
                 FitLine(d, onSetLevel)
                 Text(
-                    "Estimativa automática a partir do texto do livro (vocabulário, sintaxe, formas verbais e estilo). Não é uma avaliação oficial do Quadro Europeu Comum de Referência.",
+                    "Estimativa automática calculada sobre o texto completo do livro (${d.metrics?.chaptersScored ?: 0} de ${d.metrics?.chapters ?: d.chapterCount} capítulos com texto suficiente), " +
+                        "por um modelo calibrado em cerca de 2 600 textos de leitura com nível conhecido. Em textos de validação, faixas como esta continham o nível real em " +
+                        "${(d.range!!.confidence * 100).toInt()}% dos casos. Não é uma avaliação oficial do Quadro Europeu Comum de Referência.",
                     style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary,
                     modifier = Modifier.padding(horizontal = Spacing.screen, vertical = Spacing.sm),
                 )
@@ -90,7 +95,7 @@ fun BookDetailsScreen(d: BookDetails, onBack: () -> Unit, onRead: () -> Unit, on
                 LinearProgressIndicator(Modifier.fillMaxWidth().height(2.dp), color = Virgil.colors.primary, trackColor = Virgil.colors.divider)
             }
             else -> Text(
-                if (d.language == null) "Não foi possível identificar o idioma deste livro, então a dificuldade não foi estimada." else "Não foi possível estimar a dificuldade deste livro (texto curto demais).",
+                "Não foi possível estimar a dificuldade: ${d.error ?: "motivo desconhecido"}.",
                 style = MaterialTheme.typography.bodyMedium, color = Virgil.colors.textSecondary, modifier = Modifier.padding(horizontal = Spacing.screen),
             )
         }
@@ -110,10 +115,17 @@ fun BookDetailsScreen(d: BookDetails, onBack: () -> Unit, onRead: () -> Unit, on
         d.metrics?.let { m ->
             Spacer(Modifier.height(Spacing.md))
             SectionLabel("Indicadores")
-            Indicator("Vocabulário", m.scores.vocabulary)
+            Indicator("Léxico", m.scores.vocabulary)
             Indicator("Sintaxe", m.scores.syntax)
-            Indicator("Formas verbais", m.scores.grammar)
-            Indicator("Estilo", m.scores.style)
+            Indicator("Gramática", m.scores.grammar)
+            Indicator("Expressões e estilo", m.scores.style)
+            Text(
+                "Cada barra mostra o nível que o modelo estimaria se só aquele aspecto se afastasse da média. " +
+                    "Frases médias de ${"%.0f".format(m.meanSentenceLength)} palavras · ${"%.1f".format(m.above8kPercent).replace('.', ',')}% de palavras além das 8 mil mais comuns · " +
+                    "diversidade lexical (MTLD) ${"%.0f".format(m.mtld)} · ${"%.1f".format(m.idiomsPer1000 + m.similesPer1000).replace('.', ',')} expressões ou comparações a cada mil palavras.",
+                style = MaterialTheme.typography.bodySmall, color = Virgil.colors.textSecondary,
+                modifier = Modifier.padding(horizontal = Spacing.screen, vertical = Spacing.xs),
+            )
         }
 
         if (d.chapters.any { it.range != null }) {
@@ -159,7 +171,8 @@ private fun FitLine(d: BookDetails, onSetLevel: () -> Unit) {
                 when (fit) {
                     ReadingFit.Comfortable -> "${fit.labelPt}: o texto está no seu nível ou abaixo dele."
                     ReadingFit.ModerateChallenge -> "${fit.labelPt}: um pouco acima do seu nível; espere consultas ocasionais."
-                    ReadingFit.Advanced -> "${fit.labelPt}: bem acima do seu nível; espere consultas frequentes. O Virgil está aqui exatamente para isso."
+                    ReadingFit.HighChallenge -> "${fit.labelPt}: bem acima do seu nível; espere consultas frequentes. O Virgil está aqui exatamente para isso."
+                    ReadingFit.FarAbove -> "${fit.labelPt}: a leitura será lenta e exigirá muitas consultas — possível, se for o livro que você quer ler."
                 },
                 style = MaterialTheme.typography.bodySmall, color = Virgil.colors.accentInk,
             )
@@ -177,10 +190,4 @@ private fun Indicator(label: String, score: Double) {
         )
         Text(app.virgil.engine.analysis.DifficultyAnalyzer.levelOf(score).label, style = MaterialTheme.typography.labelMedium, color = Virgil.colors.textSecondary, modifier = Modifier.width(24.dp))
     }
-}
-
-private fun confidenceLabel(c: Float) = when {
-    c >= 0.5f -> "estimativa preliminar · confiança moderada"
-    c >= 0.3f -> "estimativa preliminar · confiança baixa"
-    else -> "estimativa preliminar · texto curto, confiança muito baixa"
 }

@@ -41,6 +41,8 @@ data class BookEntity(
     /** Progresso global 0..1, desnormalizado para a estante. */
     val progress: Float = 0f,
     @ColumnInfo(name = "analysis_state") val analysisState: String = "Pending",
+    /** Motivo da última falha da análise de dificuldade, prefixado com a versão do analisador ("v2: …"). */
+    @ColumnInfo(name = "analysis_error") val analysisError: String? = null,
 )
 
 @Entity(

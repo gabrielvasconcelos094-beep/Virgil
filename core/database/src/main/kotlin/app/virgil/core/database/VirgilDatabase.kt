@@ -1,6 +1,7 @@
 package app.virgil.core.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -29,7 +30,7 @@ import app.virgil.core.database.entity.TranslationCacheEntity
 import app.virgil.core.database.entity.VocabularyEntity
 
 @Database(
-    version = 1,
+    version = 2,
     exportSchema = true,
     entities = [
         BookEntity::class, ChapterEntity::class, TocEntryEntity::class, ReadingPositionEntity::class,
@@ -37,8 +38,8 @@ import app.virgil.core.database.entity.VocabularyEntity
         ReviewCardEntity::class, ReviewLogEntity::class, ReadingSessionEntity::class, InstalledModelEntity::class,
         LanguageProfileEntity::class, DifficultyAnalysisEntity::class, ChapterDifficultyEntity::class,
     ],
-    // Novas versões: declarar AutoMigration(from, to) aqui quando possível, ou Migration manual em Migrations.kt.
-    autoMigrations = [],
+    // v2: books.analysis_error (motivo de falha da análise de dificuldade).
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 abstract class VirgilDatabase : RoomDatabase() {
     abstract fun books(): BookDao

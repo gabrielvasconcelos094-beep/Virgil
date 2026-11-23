@@ -67,3 +67,10 @@ confiança baixa.
   Woolf/Austen/Conrad, Flaubert/Proust e Kafka ficam entre B2 e C2.
 - **Pendente:** calibração com textos de nível conhecido por idioma. Até lá, a confiança informada é
   limitada a 0,6 e a interface mostra "estimativa preliminar".
+
+## Versão 2 (novembro de 2026)
+
+A v1 foi medida contra textos com nível conhecido e se mostrou mal calibrada (36,5% de acerto exato,
+previsões comprimidas em B1–C1). Foi substituída por características ampliadas e um modelo ordinal
+calibrado em ~2 600 textos (44,0% exato, 90,5% ±1 nível na validação cruzada). Diagnóstico completo,
+método e resultados: [docs/cefr-diagnostico.md](../cefr-diagnostico.md).

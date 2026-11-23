@@ -69,14 +69,15 @@ interface BookDao {
     /** Livros à espera de análise de dificuldade (ou analisados por uma versão antiga do analisador). */
     @Query(
         """
-        SELECT id FROM books WHERE analysis_state = 'Pending'
+        SELECT id FROM books WHERE analysis_state IN ('Pending', 'Running')
            OR (analysis_state = 'Done' AND id NOT IN (SELECT book_id FROM difficulty_analyses WHERE analyzer_version >= :version))
+           OR (analysis_state = 'Failed' AND (analysis_error IS NULL OR analysis_error NOT LIKE 'v' || :version || ':%'))
         """,
     )
     fun observeNeedingAnalysis(version: Int): Flow<List<Long>>
 
-    @Query("UPDATE books SET analysis_state = :state WHERE id = :id")
-    suspend fun setAnalysisState(id: Long, state: String)
+    @Query("UPDATE books SET analysis_state = :state, analysis_error = :error WHERE id = :id")
+    suspend fun setAnalysisState(id: Long, state: String, error: String? = null)
 
     @Query("UPDATE books SET language = :language, language_variant = :variant WHERE id = :id")
     suspend fun setLanguage(id: Long, language: String?, variant: String?)

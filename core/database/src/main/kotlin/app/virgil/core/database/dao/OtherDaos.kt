@@ -199,6 +199,9 @@ interface AnalysisDao {
     @Upsert
     suspend fun upsertChapter(entity: ChapterDifficultyEntity)
 
+    @Query("DELETE FROM chapter_difficulty WHERE book_id = :bookId")
+    suspend fun deleteChapters(bookId: Long)
+
     @Upsert
     suspend fun upsert(entity: DifficultyAnalysisEntity)
 }

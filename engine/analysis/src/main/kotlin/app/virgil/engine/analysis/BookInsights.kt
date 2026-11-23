@@ -33,6 +33,8 @@ data class BookDetails(
     val readerLevel: CefrLevel?,
     val fit: ReadingFit?,
     val progress: Float,
+    /** Motivo da falha, quando a análise não pôde ser feita. */
+    val error: String?,
 )
 
 /** Junta livro, análise, capítulos e o nível declarado pelo leitor para a tela de análise. */
@@ -66,6 +68,7 @@ class BookInsights(private val db: VirgilDatabase) {
             readerLevel = readerLevel,
             fit = if (readerLevel != null && range != null) ReadingFit.of(readerLevel, range) else null,
             progress = book.progress,
+            error = book.analysisError?.substringAfter(": "),
         )
     }
 

@@ -91,8 +91,8 @@ class DifficultyAnalyzerTest {
         val a = DifficultyAnalyzer(Language.EN_GB)
         val (_, book) = a.analyzeBook(listOf(literaryEn.split("\n"), literaryEn.split("\n")))
         assertThat(book).isNotNull()
-        assertThat(book!!.findings.first()).contains("Vocabulário")
-        assertThat(book.range.confidence.toDouble()).isAtMost(DifficultyAnalyzer.MAX_CONFIDENCE)
+        assertThat(book!!.findings.any { it.startsWith("Vocabulário") }).isTrue()
+        assertThat(book.range.confidence.toDouble()).isAtMost(0.95)
         book.findings.forEach { println(" - $it") }
     }
 
@@ -108,11 +108,11 @@ class DifficultyAnalyzerTest {
         assertThat(VariantDetector.detect(Language.ES, "¿Vosotros sabéis dónde estáis? Habéis venido tarde y tenéis prisa.")).startsWith("Espanhol europeu")
     }
 
-    @Test fun `interpolacao nas ancoras`() {
-        val anchors = listOf(7.0, 10.0, 13.0, 17.0, 22.0, 30.0)
-        assertThat(DifficultyAnalyzer.interpolate(5.0, anchors)).isEqualTo(1.0)
-        assertThat(DifficultyAnalyzer.interpolate(13.0, anchors)).isEqualTo(3.0)
-        assertThat(DifficultyAnalyzer.interpolate(15.0, anchors)).isWithin(1e-9).of(3.5)
-        assertThat(DifficultyAnalyzer.interpolate(99.0, anchors)).isEqualTo(6.0)
+    @Test fun `mtld distingue texto repetitivo de texto variado`() {
+        val repetitive = List(200) { listOf("the", "dog", "is", "big", "and", "the", "cat")[it % 7] }
+        val varied = ("for having lived in westminster how many years now over twenty one feels even in the midst of the traffic or waking at night " +
+            "clarissa was positive a particular hush or solemnity an indescribable pause a suspense before big ben strikes there out it boomed first " +
+            "a warning musical then the hour irrevocable the leaden circles dissolved in the air").split(" ")
+        assertThat(DifficultyAnalyzer.mtld(varied)).isGreaterThan(DifficultyAnalyzer.mtld(repetitive) * 3)
     }
 }

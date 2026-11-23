@@ -20,6 +20,12 @@ internal class LanguageResources(
     val particles: Set<String> = emptySet(),
     /** Expressões idiomáticas frequentes na literatura (minúsculas). */
     val idioms: List<String> = emptyList(),
+    /** Voz passiva (auxiliar + particípio). */
+    val passive: List<Regex> = emptyList(),
+    /** Construções condicionais/hipotéticas. */
+    val conditional: List<Regex> = emptyList(),
+    /** Comparações explícitas ("like a", "comme un"…): indício mensurável de linguagem figurada. */
+    val similes: List<Regex> = emptyList(),
 ) {
     companion object {
         fun forLanguage(l: Language): LanguageResources = when (l) {
@@ -42,6 +48,9 @@ internal class LanguageResources(
             archaisms = setOf("thee", "thou", "thy", "thine", "hath", "doth", "art", "ye", "'tis", "’tis", "whilst", "amongst", "hither", "thither", "whence", "wherefore", "ere", "oft", "nigh", "betwixt", "methinks", "shalt", "wilt", "couldst", "wouldst"),
             particles = setOf("up", "down", "out", "off", "away", "back", "over", "through", "about", "along", "around", "aside", "forth", "in", "on"),
             idioms = listOf("by and by", "at once", "in vain", "on the whole", "by no means", "out of the question", "at length", "as it were", "to be sure", "in spite of", "for good", "all the same", "make up one's mind", "take leave", "set out", "give way", "come to pass", "at all events", "of course", "no doubt"),
+            passive = rx("\\b(is|are|was|were|be|been|being)\\s+(\\w+ly\\s+)?\\w+(ed|en|wn|ght|ung|ept|ade|ost|ound|ade|eld|old|ent)\\b"),
+            conditional = rx("\\bif\\b[^.?!]{0,80}\\b(would|could|might|should)\\b", "\\b(would|could|might) have\\b", "\\bwere (i|he|she|it|we|they) to\\b", "\\bhad (i|he|she|it|we|they) \\w+(ed|en|wn)\\b"),
+            similes = rx("\\blike an? \\w+", "\\bas \\w+ as an? \\b", "\\bas (if|though)\\b"),
         )
 
         private val FR = LanguageResources(
@@ -58,6 +67,9 @@ internal class LanguageResources(
             literaryLabel = "passé simple e subjuntivo imperfeito",
             archaisms = setOf("icelle", "icelui", "moult", "oncques", "jadis", "naguère", "point", "sitôt", "quérir", "céans"),
             idioms = listOf("de bonne heure", "tout à coup", "tout de suite", "à peine", "au fur et à mesure", "à la fois", "tant bien que mal", "faire semblant", "avoir beau", "en vain", "à l'improviste", "peu à peu", "tout à fait", "coûte que coûte", "à tort", "en effet", "d'ailleurs", "au fond", "du reste", "sur-le-champ"),
+            passive = rx("\\b(est|sont|était|étaient|fut|furent|a été|ont été|avait été|sera|seront)\\s+\\w+(é|ée|és|ées|i|ie|is|ies|u|ue|us|ues|it|ite|its|ites)\\b"),
+            conditional = rx("\\b\\w{3,}(rais|rait|rions|riez|raient)\\b", "\\bsi\\b[^.?!]{0,60}\\b\\w+(ais|ait|aient)\\b"),
+            similes = rx("\\bcomme (un|une|des|le|la|les|si)\\b", "\\bpareil à\\b", "\\btel(le)? (un|une)\\b"),
         )
 
         private val DE = LanguageResources(
@@ -72,6 +84,9 @@ internal class LanguageResources(
             archaicPatterns = rx("\\b\\w*th(un|eil|ür|ier|räne)\\w*\\b"),
             particles = setOf("an", "auf", "aus", "ab", "ein", "mit", "nach", "vor", "zu", "zurück", "weg", "her", "hin", "fort", "los", "zusammen", "um"),
             idioms = listOf("auf einmal", "mit einem mal", "ohne weiteres", "nach und nach", "zum ersten mal", "auf jeden fall", "von neuem", "gang und gäbe", "aufs neue", "im grunde", "nach wie vor", "ab und zu", "vor allem", "zu fuß", "eines tages", "eines morgens", "eines abends", "zu hause", "im stillen", "allerdings"),
+            passive = rx("\\b(wird|werden|wurde|wurden|worden|ist|sind|war|waren)\\b[^.?!,]{0,60}\\bge\\w+(t|en)\\b"),
+            conditional = rx("\\b(würde|würden|wäre|wären|hätte|hätten|könnte|könnten)\\b", "\\b(wenn|falls)\\b[^.?!]{0,80}\\b(würde|wäre|hätte)\\b"),
+            similes = rx("\\bwie (ein|eine|einer|einem|einen)\\b", "\\bals ob\\b", "\\bgleich (einem|einer)\\b"),
         )
 
         private val IT = LanguageResources(
@@ -87,6 +102,9 @@ internal class LanguageResources(
             literaryLabel = "passato remoto e congiuntivo imperfetto",
             archaisms = setOf("egli", "ella", "esso", "essa", "codesto", "costui", "colui", "cotesto", "giacché", "ivi", "onde", "testé", "uopo", "imperocché", "dappoi", "chè"),
             idioms = listOf("a un tratto", "a poco a poco", "di nuovo", "per lo più", "a malapena", "in fretta", "di colpo", "a stento", "fare finta", "prendere un granchio", "tutto a un tratto", "da capo", "per forza", "in fondo", "del resto", "a lungo", "a vicenda", "di gran lunga", "a ogni modo", "senz'altro"),
+            passive = rx("\\b(è|sono|era|erano|fu|furono|venne|vennero|viene|vengono|è stato|è stata|fu|stato|stata)\\s+\\w+(ato|ata|ati|ate|uto|uta|uti|ute|ito|ita|iti|ite)\\b"),
+            conditional = rx("\\b\\w{3,}(rebbe|rebbero|rei|resti|remmo|reste)\\b", "\\bse\\b[^.?!]{0,60}\\b\\w+(asse|esse|isse)\\b"),
+            similes = rx("\\bcome (un|una|uno|il|la|lo|se)\\b", "\\bsimile a\\b", "\\bquasi fosse\\b"),
         )
 
         private val ES = LanguageResources(
@@ -100,6 +118,9 @@ internal class LanguageResources(
             literaryLabel = "subjuntivo imperfeito e pronomes enclíticos arcaicos (\"quedóse\")",
             archaisms = setOf("vuesa", "agora", "asaz", "otrosí", "maguer", "empero", "quedóse", "díjole", "fuéronse", "hase", "harto", "merced", "hidalgo", "ínsula", "fermosa"),
             idioms = listOf("de repente", "a menudo", "de nuevo", "sin embargo", "por lo tanto", "a lo mejor", "de hecho", "a duras penas", "en seguida", "de pronto", "al fin", "por fin", "a ciegas", "a la vez", "de golpe", "en balde", "a solas", "de veras", "poco a poco", "sin más"),
+            passive = rx("\\b(es|son|era|eran|fue|fueron|será|serán|ha sido|han sido|había sido)\\s+\\w+(ado|ada|ados|adas|ido|ida|idos|idas)\\b"),
+            conditional = rx("\\b\\w{3,}(ría|rías|ríamos|rían)\\b", "\\bsi\\b[^.?!]{0,60}\\b\\w+(ara|iera|ase|iese)\\b"),
+            similes = rx("\\bcomo (un|una|si|el|la)\\b", "\\bsemejante a\\b", "\\bcual si\\b"),
         )
 
         private val PT = LanguageResources(
@@ -109,6 +130,9 @@ internal class LanguageResources(
             literaryLabel = "mais-que-perfeito simples e subjuntivo imperfeito",
             archaisms = setOf("vosmecê", "vossemecê", "outrossim", "destarte", "porquanto", "conquanto", "mister", "assaz", "outrora"),
             idioms = listOf("de repente", "aos poucos", "de novo", "de fato", "à toa", "de vez em quando", "às vezes", "de propósito", "a fim de", "em vão"),
+            passive = rx("\\b(é|são|era|eram|foi|foram|será|serão|tinha sido|foi sendo)\\s+\\w+(ado|ada|ados|adas|ido|ida|idos|idas)\\b"),
+            conditional = rx("\\b\\w{3,}(ria|rias|ríamos|riam)\\b", "\\bse\\b[^.?!]{0,60}\\b\\w+(asse|esse|isse)\\b"),
+            similes = rx("\\bcomo (um|uma|se|o|a)\\b", "\\bsemelhante a\\b", "\\bqual (um|uma)\\b"),
         )
     }
 }

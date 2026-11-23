@@ -43,7 +43,9 @@ class CefrTest {
         assertThat(ReadingFit.of(CefrLevel.C1, book)).isEqualTo(ReadingFit.Comfortable)
         assertThat(ReadingFit.of(CefrLevel.C2, book)).isEqualTo(ReadingFit.Comfortable)
         assertThat(ReadingFit.of(CefrLevel.B2, book)).isEqualTo(ReadingFit.ModerateChallenge)
-        assertThat(ReadingFit.of(CefrLevel.B1, book)).isEqualTo(ReadingFit.Advanced)
+        assertThat(ReadingFit.of(CefrLevel.B1, book)).isEqualTo(ReadingFit.HighChallenge)
+        assertThat(ReadingFit.of(CefrLevel.A2, book)).isEqualTo(ReadingFit.FarAbove)
+        assertThat(ReadingFit.of(CefrLevel.B1, CefrRange(CefrLevel.B1, CefrLevel.B1, 0.5f))).isEqualTo(ReadingFit.Comfortable)
     }
 
     @Test fun `parse de nivel`() {

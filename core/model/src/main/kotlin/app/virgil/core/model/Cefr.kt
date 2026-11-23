@@ -24,16 +24,22 @@ data class CefrRange(val low: CefrLevel, val high: CefrLevel, val confidence: Fl
 enum class ReadingFit(val labelPt: String) {
     Comfortable("Leitura confortável"),
     ModerateChallenge("Desafio moderado"),
-    Advanced("Leitura avançada");
+    HighChallenge("Desafio elevado"),
+    FarAbove("Muito acima do nível atual");
 
     companion object {
-        /** Diferença em níveis entre o livro (limite superior) e o leitor. */
+        /**
+         * Compara o leitor com o centro da faixa estimada (média dos limites): uma faixa larga e
+         * incerta não deve, sozinha, empurrar o livro para "muito acima".
+         */
         fun of(reader: CefrLevel, book: CefrRange): ReadingFit {
-            val gap = book.high.ordinal - reader.ordinal
+            val center = (book.low.ordinal + book.high.ordinal) / 2.0
+            val gap = center - reader.ordinal
             return when {
-                gap <= 0 -> Comfortable
-                gap == 1 -> ModerateChallenge
-                else -> Advanced
+                gap <= 0.25 -> Comfortable
+                gap <= 1.25 -> ModerateChallenge
+                gap <= 2.25 -> HighChallenge
+                else -> FarAbove
             }
         }
     }
