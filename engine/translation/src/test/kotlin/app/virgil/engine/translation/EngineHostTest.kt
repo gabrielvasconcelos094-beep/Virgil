@@ -78,6 +78,20 @@ class EngineHostTest {
         assertThat(db.vocabulary().observeLookupCount().first()).isEqualTo(4)
     }
 
+    /** Antes: o primeiro toque pagava a carga do modelo. Depois: o leitor aquece ao abrir. */
+    @Test fun aquecimentoAoAbrirOLeitor() = runBlocking {
+        val req = word("witnessed", "She could scarcely believe what she had witnessed.")
+        val t0 = System.nanoTime()
+        engine.warmUp(Language.EN_GB)
+        withTimeout(600_000) { engine.status.first { it is EngineStatus.Ready } }
+        kotlinx.coroutines.delay(50)
+        val warmMs = (System.nanoTime() - t0) / 1_000_000
+        val first = engine.translate(req).filterIsInstance<TranslationEvent.Done>().first()
+        println("aquecimento (carga + prefixo) em $warmMs ms; primeiro toque depois: '${first.text}' em ${first.millis} ms")
+        assertThat(first.fromCache).isFalse()
+        assertThat(first.text).isNotEmpty()
+    }
+
     @Test fun ultimaConsultaVence() = runBlocking {
         val long = async {
             engine.translate(TranslationRequest(SelectionKind.Paragraph, Language.FR,

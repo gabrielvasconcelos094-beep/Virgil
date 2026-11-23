@@ -42,4 +42,20 @@ class PromptsTest {
         assertThat(LocalTranslationEngine.cacheKey(ModelCatalog.HyMT2, r)).isNotEqualTo(k1)
         assertThat(LocalTranslationEngine.cacheKey(ModelCatalog.TranslateGemma4B, r.copy(context = "His future looks bright."))).isNotEqualTo(k1)
     }
+
+    @Test fun janelaDeContexto() {
+        val short = "She could scarcely believe what she had witnessed."
+        org.junit.Assert.assertEquals(short, Prompts.contextWindow(short, "scarcely"))
+        val long = (1..200).joinToString(" ") { "w$it" }
+        val win = Prompts.contextWindow(long, "w100", radius = 5)
+        org.junit.Assert.assertEquals("… w95 w96 w97 w98 w99 w100 w101 w102 w103 w104 w105 …", win)
+    }
+    @Test fun chaveDeCacheNormalizada() {
+        val spec = ModelCatalog.TranslateGemma4B
+        val a = LocalTranslationEngine.cacheKey(spec, TranslationRequest(app.virgil.core.model.SelectionKind.Word, app.virgil.core.model.Language.EN_GB, "don’t", "I  don’t   know."))
+        val b = LocalTranslationEngine.cacheKey(spec, TranslationRequest(app.virgil.core.model.SelectionKind.Word, app.virgil.core.model.Language.EN_GB, "don't", "I don't know."))
+        org.junit.Assert.assertEquals(a, b)
+        org.junit.Assert.assertNotEquals(LocalTranslationEngine.cacheKey(spec, TranslationRequest(app.virgil.core.model.SelectionKind.Word, app.virgil.core.model.Language.DE, "Bank", "Die Bank.")) , LocalTranslationEngine.cacheKey(spec, TranslationRequest(app.virgil.core.model.SelectionKind.Word, app.virgil.core.model.Language.DE, "bank", "Die Bank.")))
+    }
+
 }

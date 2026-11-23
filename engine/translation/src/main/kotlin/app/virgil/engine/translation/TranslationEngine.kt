@@ -62,6 +62,8 @@ interface Translator {
     fun translate(request: TranslationRequest): Flow<TranslationEvent>
     /** O leitor foi fechado: o modelo pode ser descarregado após um período de inatividade. */
     fun release()
+    /** O leitor abriu um livro em [language]: carregar o modelo antes do primeiro toque. */
+    fun warmUp(language: Language) {}
 }
 
 /**
@@ -172,7 +174,8 @@ class LocalTranslationEngine(
         }
         if (generation.get() != myGen) return Outcome.Cancelled
         val isTerm = r.kind == SelectionKind.Word || r.kind == SelectionKind.Expression
-        val prompt = if (isTerm) Prompts.term(spec.family, r.language, r.context ?: r.text, r.text) else Prompts.text(spec.family, r.language, r.text)
+        val context = if (isTerm) Prompts.contextWindow(r.context ?: r.text, r.text) else null
+        val prompt = if (isTerm) Prompts.term(spec.family, r.language, context!!, r.text) else Prompts.text(spec.family, r.language, r.text)
         val maxTokens = if (isTerm) 12 else (s.countTokens(r.text) * 2 + 24).coerceIn(32, 900)
         var lastEmit = 0L
         val result = s.generate(prompt, maxTokens, Prompts.repeatPenalty(spec.family)) { text ->
@@ -214,10 +217,28 @@ class LocalTranslationEngine(
         sessionModel = null
     }
 
-    /** Pré-carrega o modelo (ex.: ao abrir o leitor, se o usuário preferir respostas mais rápidas). */
-    fun warmUp() {
+    /**
+     * Carrega o modelo e avalia a parte fixa do prompt de palavra do idioma (fica no KV cache), para
+     * que o primeiro toque não pague a carga — no diagnóstico, a carga a frio levou de segundos a
+     * mais de um minuto, conforme o disco. Uma consulta real feita durante o aquecimento espera o
+     * lock e encontra o modelo pronto; um toque cancela a avaliação do prefixo.
+     */
+    override fun warmUp(language: Language) {
         val spec = models.installed.value ?: return
-        scope.launch { lock.withLock { withContext(inference) { runCatching { ensureLoadedLocked(spec) } } } }
+        if (!cpuSupported) return
+        unloadJob?.cancel()
+        val myGen = generation.get()
+        scope.launch {
+            lock.withLock {
+                if (generation.get() != myGen) return@withLock
+                withContext(inference) {
+                    runCatching {
+                        val s = ensureLoadedLocked(spec)
+                        if (generation.get() == myGen) s.generate(Prompts.term(spec.family, language, "", ""), 1)
+                    }.onFailure { e -> _status.value = EngineStatus.Failed(spec, e.message ?: "Falha ao carregar o modelo.") }
+                }
+            }
+        }
     }
 
     override fun release() {
@@ -242,11 +263,21 @@ class LocalTranslationEngine(
     }
 
     companion object {
-        /** Chave do cache: modelo + operação + idioma + texto + contexto, normalizados. */
+        /**
+         * Chave do cache: modelo + operação + idioma + texto + contexto, normalizados (espaços,
+         * apóstrofos e aspas tipográficas) — a mesma frase vinda de um EPUB com "’" e de um TXT com
+         * "'" usa a mesma tradução. Maiúsculas são mantidas (mudam o sentido: "Bank"/"bank").
+         */
         fun cacheKey(spec: ModelSpec, r: TranslationRequest): String {
             val isTerm = r.kind == SelectionKind.Word || r.kind == SelectionKind.Expression
-            val raw = listOf(spec.id, if (isTerm) "term" else "text", r.language.tag, r.text.trim(), if (isTerm) r.context?.trim().orEmpty() else "").joinToString("\u0001")
+            val context = if (isTerm) Prompts.contextWindow(r.context ?: r.text, r.text) else ""
+            val raw = listOf(spec.id, if (isTerm) "term" else "text", r.language.tag, normalize(r.text), normalize(context)).joinToString("\u0001")
             return MessageDigest.getInstance("SHA-256").digest(raw.toByteArray()).joinToString("") { "%02x".format(it) }
         }
+
+        private val spaces = Regex("\\s+")
+        internal fun normalize(t: String): String = t.trim()
+            .replace('’', '\'').replace('‘', '\'').replace('“', '"').replace('”', '"').replace('«', '"').replace('»', '"')
+            .replace('\u00A0', ' ').replace(spaces, " ")
     }
 }

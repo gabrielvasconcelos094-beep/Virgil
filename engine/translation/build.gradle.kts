@@ -16,9 +16,14 @@ dependencies {
 
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
+    testImplementation(libs.kotlinx.serialization.json)
 }
 
 tasks.withType<Test>().configureEach {
-    System.getenv("VIRGIL_LLAMA_HOST_LIB")?.let { systemProperty("virgil.llama.lib", it) }
+    System.getenv("VIRGIL_LLAMA_HOST_LIB")?.let {
+        systemProperty("virgil.llama.lib", it)
+        // A biblioteca nativa só pode ser carregada por um classloader por JVM (Robolectric usa outro).
+        forkEvery = 1
+    }
     System.getenv("VIRGIL_TEST_MODEL")?.let { systemProperty("virgil.test.model", it) }
 }

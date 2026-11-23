@@ -35,6 +35,22 @@ internal object Prompts {
         }
     }
 
+    /**
+     * Variante com a instrução antes da frase: a parte fixa (≈ 60 tokens) fica sempre no KV cache, e
+     * a frase também, quando se consultam várias palavras dela em seguida.
+     */
+    fun termPrefixFirst(family: PromptFamily, source: Language, sentence: String, term: String): String {
+        val (name, code) = lang(source)
+        val instruction = "Give the Brazilian Portuguese translation of the $name word or expression shown after the sentence, " +
+            "as it is used in that sentence. Output only the translation (one to three words), nothing else."
+        return when (family) {
+            PromptFamily.TranslateGemma -> gemma(
+                "You are a professional $name ($code) to Portuguese (pt-BR) translator. $instruction\nSentence: $sentence\nWord or expression: \"$term\"",
+            )
+            PromptFamily.HyMT -> hymt("$instruction\nSentence: $sentence\nWord or expression: \"$term\"")
+        }
+    }
+
     fun text(family: PromptFamily, source: Language, text: String): String {
         val (name, code) = lang(source)
         return when (family) {
@@ -49,6 +65,22 @@ internal object Prompts {
                     "without any additional explanation:\n\n" + text,
             )
         }
+    }
+
+    /**
+     * Contexto enviado com uma palavra: a frase inteira, ou — em frases muito longas (comuns em
+     * Proust, Saramago…) — uma janela de [radius] palavras de cada lado do termo. Cada token a menos
+     * no prompt economiza ~20 ms no diagnóstico do host; acima de ~60 palavras a frase não ajuda a
+     * desambiguar.
+     */
+    fun contextWindow(sentence: String, term: String, radius: Int = 30): String {
+        val words = sentence.split(' ').filter { it.isNotEmpty() }
+        if (words.size <= radius * 2 + 1) return sentence
+        val first = term.split(' ').first()
+        val at = words.indexOfFirst { it.contains(first) }.takeIf { it >= 0 } ?: return words.take(radius * 2).joinToString(" ") + " …"
+        val from = (at - radius).coerceAtLeast(0)
+        val to = (at + radius + term.split(' ').size).coerceAtMost(words.size)
+        return (if (from > 0) "… " else "") + words.subList(from, to).joinToString(" ") + (if (to < words.size) " …" else "")
     }
 
     fun repeatPenalty(family: PromptFamily) = if (family == PromptFamily.HyMT) 1.05f else 1f

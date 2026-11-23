@@ -45,6 +45,8 @@ data class TextSelection(val blockIndex: Int, val start: Int, val end: Int, val 
 sealed interface TranslationUi {
     data object NoModel : TranslationUi
     data object Working : TranslationUi
+    /** O modelo ainda está sendo carregado (primeiro uso, ou aquecimento em andamento). */
+    data object LoadingModel : TranslationUi
     data class Streaming(val text: String) : TranslationUi
     data class Ready(val text: String, val fromCache: Boolean) : TranslationUi
     data class Failed(val message: String) : TranslationUi
@@ -142,6 +144,8 @@ class ReaderViewModel(
             }
             opened = book
             segmenter = TextSegmenter(book.language ?: Language.EN_GB)
+            // Modelo de tradução carregado antes do primeiro toque (e prefixo do prompt no KV cache).
+            translator?.warmUp(book.language ?: Language.EN_GB)
             // Léxico IPA do idioma do livro já em memória antes do primeiro toque.
             (ipa as? app.virgil.engine.speech.LexiconIpaSource)?.let { src -> launch { src.preload(book.language ?: Language.EN_GB) } }
             bookIdFlow.value = book.book.id
@@ -338,7 +342,7 @@ class ReaderViewModel(
         translateJob = viewModelScope.launch {
             translator.translate(request).collect { ev ->
                 val ui = when (ev) {
-                    TranslationEvent.Started -> TranslationUi.Working
+                    TranslationEvent.Started -> if (translator.status.value is EngineStatus.Loading || translator.status.value is EngineStatus.Idle) TranslationUi.LoadingModel else TranslationUi.Working
                     is TranslationEvent.Partial -> TranslationUi.Streaming(ev.text)
                     is TranslationEvent.Done -> TranslationUi.Ready(ev.text, ev.fromCache)
                     is TranslationEvent.Failed -> TranslationUi.Failed(ev.message)
